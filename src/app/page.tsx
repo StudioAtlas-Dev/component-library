@@ -78,7 +78,7 @@ export default async function Home() {
   const types = getComponentTypes(components);
 
   return (
-    <div className="min-h-screen p-8 bg-white">
+    <div className="min-h-screen p-8">
       <h1 className="text-3xl font-bold mb-8">Component Library</h1>
       <ClientPage initialComponents={components} types={types} />
     </div>

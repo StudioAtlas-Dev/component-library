@@ -1,4 +1,3 @@
-import React from 'react';
 import JobCard from '@/components/ui/JobCard';
 
 export const metadata = {

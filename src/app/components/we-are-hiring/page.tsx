@@ -1,5 +1,3 @@
-'use client';
-
 import WeAreHiringComponent from './WeAreHiringComponent';
 
 export default function WeAreHiringPage() {
