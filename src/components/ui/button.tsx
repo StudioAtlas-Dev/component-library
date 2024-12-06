@@ -1,10 +1,16 @@
-import React from 'react'
+import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 import anime from 'animejs'
 
+// Honestly, I'm more proud of this custom button component than the actual component library
+// Pass the href prop to use Next.js Link component, otherwise defaults to button keeping same style
+
 export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide';
+
+// Helper type to extract the correct ref type from a component or HTML element
+type ElementRef<C extends React.ElementType> = React.ComponentPropsWithRef<C>['ref']
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden relative",
@@ -28,7 +34,7 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
         custom: "h-14 px-8 py-4 text-base",
-        grid: "h-12 px-8 py-2 text-sm",
+        grid: "h-12 px-6 py-2 text-sm sm:px-8",
       },
       hoverEffect: {
         none: "",
@@ -51,19 +57,41 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
   bgColor?: string
+  href?: string
+  target?: string
+  hoverEffect?: ButtonHoverEffect
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, style, ...props }, ref) => {
-    const buttonRef = React.useRef<HTMLButtonElement>(null);
+const Button = React.forwardRef<HTMLElement, ButtonProps>(
+  ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, style, href, target, type = "button", ...props }, ref) => {
+    // Internal ref to track the DOM element for animations
+    // We use HTMLElement instead of HTMLButtonElement to support both button and anchor elements
+    const elementRef = React.useRef<HTMLElement | null>(null);
+    
+    // Ref for the overlay div used in hover animations
     const overlayRef = React.useRef<HTMLDivElement>(null);
+    
+    // Refs to track animation state
     const animationRef = React.useRef<anime.AnimeInstance | null>(null);
     const isAnimatingRef = React.useRef(false);
     
+    // Create a merged ref callback that handles both the forwarded ref and our internal ref
+    // This is memoized to prevent unnecessary re-renders
+    const mergedRef = React.useMemo(() => {
+      return (node: HTMLElement | null) => {
+        // Handle the forwarded ref which can be either a function ref or an object ref
+        if (typeof ref === 'function') ref(node)
+        else if (ref) ref.current = node
+        
+        // Update our internal ref for animation handling
+        elementRef.current = node
+      }
+    }, [ref]) // Only recreate if the forwarded ref changes
+    
     React.useEffect(() => {
-      if (!buttonRef.current || !overlayRef.current || hoverEffect === 'none') return;
+      if (!elementRef.current || !overlayRef.current || hoverEffect === 'none') return;
 
-      const button = buttonRef.current;
+      const element = elementRef.current;
       const overlay = overlayRef.current;
 
       const enterAnimation = {
@@ -142,36 +170,62 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         });
       };
 
-      button.addEventListener('mouseenter', mouseEnter);
-      button.addEventListener('mouseleave', mouseLeave);
+      element.addEventListener('mouseenter', mouseEnter);
+      element.addEventListener('mouseleave', mouseLeave);
 
       return () => {
-        button.removeEventListener('mouseenter', mouseEnter);
-        button.removeEventListener('mouseleave', mouseLeave);
+        element.removeEventListener('mouseenter', mouseEnter);
+        element.removeEventListener('mouseleave', mouseLeave);
         animationRef.current?.pause();
       };
     }, [hoverEffect]);
 
-    const Comp = asChild ? Slot : "button"
     const buttonStyle = bgColor ? {
       ...style,
       backgroundColor: bgColor,
     } as React.CSSProperties : style
 
+    if (href) {
+      return (
+        <a
+          href={href}
+          target={target}
+          className={cn(buttonVariants({ variant, size, className }), "group")}
+          style={buttonStyle}
+          ref={mergedRef as ElementRef<'a'>}
+          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        >
+          {props.children}
+          {hoverEffect !== 'none' && (
+            <div
+              ref={overlayRef}
+              className="absolute -inset-[1px] bg-black opacity-90 pointer-events-none transform"
+              style={{ 
+                transform: hoverEffect === 'fill-up' ? 'scaleY(0) translateY(100%)' : 
+                          hoverEffect === 'fill-in' ? 'scaleY(0)' :
+                          hoverEffect === 'slide' ? 'translateX(-100%)' : 'scale(1)',
+                transformOrigin: hoverEffect === 'fill-up' ? 'bottom' :
+                               hoverEffect === 'fill-in' ? 'top' : 'left'
+              }}
+            />
+          )}
+        </a>
+      )
+    }
+
+    const Comp = asChild ? Slot : 'button'
     return (
       <Comp
-        className={cn(
-          buttonVariants({ variant, size, className }),
-          "group"
-        )}
-        ref={buttonRef}
+        className={cn(buttonVariants({ variant, size, className }), "group")}
+        ref={mergedRef}
+        type={asChild ? undefined : type}
         style={buttonStyle}
         {...props}
       >
         {hoverEffect !== 'none' && (
           <div
             ref={overlayRef}
-            className="absolute inset-0 bg-black opacity-90 pointer-events-none transform"
+            className="absolute -inset-[1px] bg-black opacity-90 pointer-events-none transform"
             style={{ 
               transform: hoverEffect === 'fill-up' ? 'scaleY(0) translateY(100%)' : 
                         hoverEffect === 'fill-in' ? 'scaleY(0)' :
@@ -188,6 +242,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     )
   }
 )
+
 Button.displayName = "Button"
 
 export { Button, buttonVariants }

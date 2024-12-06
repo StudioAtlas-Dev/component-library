@@ -6,6 +6,7 @@ export interface ComponentMeta {
   dateAdded: string;
   path: string;
   description?: string;
+  tags?: string[];
 }
 
 export type SortOption = 'Date Added' | 'Name';
