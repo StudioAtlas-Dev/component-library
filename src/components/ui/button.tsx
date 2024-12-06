@@ -131,8 +131,8 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           easing: 'easeInQuart'
         },
         'slide': {
-          translateX: ['0%', '100%'],
-          duration: 300,
+          translateX: ['0%', '-100%'],
+          duration: 500,
           easing: 'easeInCubic'
         },
         'pulse': {
