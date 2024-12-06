@@ -1,5 +1,13 @@
 import { ComponentMeta } from '@/types/component';
 
+export async function getComponents(): Promise<ComponentMeta[]> {
+  const response = await fetch('/api/components');
+  if (!response.ok) {
+    throw new Error('Failed to fetch components');
+  }
+  return response.json();
+}
+
 export function filterComponents(
   components: ComponentMeta[],
   search: string,

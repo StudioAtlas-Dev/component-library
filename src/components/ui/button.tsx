@@ -57,6 +57,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, style, ...props }, ref) => {
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const overlayRef = React.useRef<HTMLDivElement>(null);
+    const animationRef = React.useRef<anime.AnimeInstance | null>(null);
+    const isAnimatingRef = React.useRef(false);
     
     React.useEffect(() => {
       if (!buttonRef.current || !overlayRef.current || hoverEffect === 'none') return;
@@ -113,16 +115,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       };
 
       const mouseEnter = () => {
-        anime({
+        if (isAnimatingRef.current) {
+          animationRef.current?.pause();
+        }
+        isAnimatingRef.current = true;
+        animationRef.current = anime({
           targets: overlay,
           ...enterAnimation[hoverEffect as keyof typeof enterAnimation],
+          complete: () => {
+            isAnimatingRef.current = false;
+          }
         });
       };
 
       const mouseLeave = () => {
-        anime({
+        if (isAnimatingRef.current) {
+          animationRef.current?.pause();
+        }
+        isAnimatingRef.current = true;
+        animationRef.current = anime({
           targets: overlay,
           ...leaveAnimation[hoverEffect as keyof typeof leaveAnimation],
+          complete: () => {
+            isAnimatingRef.current = false;
+          }
         });
       };
 
@@ -132,6 +148,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return () => {
         button.removeEventListener('mouseenter', mouseEnter);
         button.removeEventListener('mouseleave', mouseLeave);
+        animationRef.current?.pause();
       };
     }, [hoverEffect]);
 

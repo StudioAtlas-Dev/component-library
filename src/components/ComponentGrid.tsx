@@ -20,16 +20,16 @@ export default function ComponentGrid({ components }: ComponentGridProps) {
         <Link 
           key={component.path} 
           href={`/components/${component.path}`}
-          className="group relative hover:none"
+          className="group relative hover:none block overflow-hidden rounded-lg border border-gray-200"
         >
-          <div className="aspect-video relative overflow-hidden">
+          <div className="relative w-full aspect-[16/9]">
             <Image
               src={`/previews/${component.path}.png`}
               alt={component.name}
               fill
-              className="object-cover"
+              className="object-contain bg-gray-50"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              quality={50}
+              quality={75}
               priority={true}
             />
             {/* Overlay with button */}
@@ -45,7 +45,7 @@ export default function ComponentGrid({ components }: ComponentGridProps) {
               </div>
             </div>
           </div>
-          <div className="p-4 bg-white">
+          <div className="p-4 bg-white border-t border-gray-200">
             <h3 className="text-lg font-semibold">{component.name}</h3>
             <p className="text-sm text-gray-600 mt-1">{component.type}</p>
             <div className="mt-2 flex gap-2">
