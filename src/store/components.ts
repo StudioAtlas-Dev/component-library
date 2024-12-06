@@ -14,7 +14,7 @@ export function filterComponents(
   selectedType: string,
   sortBy: 'Name' | 'Date Added' = 'Name'
 ): ComponentMeta[] {
-  let filtered = [...components];
+  let filtered = [...components].filter(component => component && component.name);
 
   // Filter by search
   if (search) {
@@ -34,10 +34,13 @@ export function filterComponents(
 
   // Sort components
   filtered.sort((a, b) => {
+    if (!a || !b) return 0;
     if (sortBy === 'Name') {
-      return a.name.localeCompare(b.name);
+      return (a.name || '').localeCompare(b.name || '');
     } else {
-      return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
+      const dateA = a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
+      const dateB = b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+      return dateB - dateA;
     }
   });
 
