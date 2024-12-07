@@ -12,7 +12,15 @@ Each component follows a consistent structure:
 └── page.tsx                     # Preview page
 ```
 
-### Component Metadata
+## Running Project
+
+Start the development server:
+```bash
+npm run dev
+```
+Go to http://localhost:3000/ to view the component browser.
+
+## Component Metadata
 
 Components export metadata that provides information about their purpose and usage:
 
