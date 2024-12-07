@@ -42,7 +42,21 @@ async function getServerComponents(): Promise<ComponentMeta[]> {
         const componentPath = join(COMPONENTS_DIR, dir.name);
         const files = readdirSync(componentPath);
         
-        // Find the main component file (any .tsx file that's not page.tsx)
+        // First try to find metadata.ts file
+        const metadataFile = files.find(file => file === 'metadata.ts');
+        
+        if (metadataFile) {
+          const { metadata } = await import(`@/app/components/${dir.name}/metadata`);
+          if (metadata) {
+            components.push({
+              ...metadata,
+              path: dir.name
+            });
+            continue;
+          }
+        }
+        
+        // Fallback to finding metadata in component file
         const componentFile = files.find(file => 
           file.endsWith('.tsx') && 
           !file.includes('page.tsx')
