@@ -3,11 +3,42 @@ import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 import anime from 'animejs'
+import { GoArrowUpRight } from 'react-icons/go'
 
-// Honestly, I'm more proud of this custom button component than the actual component library
+/**
+ * Animation System Documentation (for future reference)
+ * 
+ * Hover Effects:
+ * - Animations are handled through anime.js using refs and event listeners
+ * - New animations can be added by:
+ *   1. Adding the effect name to ButtonHoverEffect type
+ *   2. Adding corresponding animation config to 'animations' and 'leaveAnimations' objects
+ *   3. Adding the effect to buttonVariants hoverEffect variant
+ *   4. If needed, adding special JSX structure in the render method
+ * 
+ * Adding New Animations:
+ * Example structure for new animation:
+ * {
+ *   animations: {
+ *     'new-effect': {
+ *       property: [startValue, endValue],
+ *       duration: timeInMs,
+ *       easing: 'easingFunction'
+ *     }
+ *   },
+ *   leaveAnimations: {
+ *     'new-effect': {
+ *       property: returnValue,
+ *       duration: timeInMs,
+ *       easing: 'easingFunction'
+ *     }
+ *   }
+ * }
+ */
+
 // Pass the href prop to use Next.js Link component, otherwise defaults to button keeping same style
 
-export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide';
+export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow';
 
 // Helper type to extract the correct ref type from a component or HTML element
 type ElementRef<C extends React.ElementType> = React.ComponentPropsWithRef<C>['ref']
@@ -42,6 +73,7 @@ const buttonVariants = cva(
         "fill-in": "relative",
         pulse: "",
         slide: "relative",
+        "reveal-arrow": "relative",
       },
     },
     defaultVariants: {
@@ -94,17 +126,17 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
       const element = elementRef.current;
       const overlay = overlayRef.current;
 
-      const enterAnimation = {
+      const animations = {
         'fill-up': {
           scaleY: [0, 1],
           translateY: ['100%', '0%'],
           duration: 500,
-          easing: 'easeOutCubic'
+          easing: 'easeOutQuad'
         },
         'fill-in': {
           scaleY: [0, 1],
-          duration: 400,
-          easing: 'easeOutQuart'
+          duration: 250,
+          easing: 'easeOutQuad'
         },
         'slide': {
           translateX: ['-100%', '0%'],
@@ -115,10 +147,15 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           scale: [1, 1.1],
           duration: 200,
           easing: 'easeInOutQuad'
+        },
+        'reveal-arrow': {
+          translateX: ['32px', '0px'],
+          duration: 200,
+          easing: 'easeOutQuad'
         }
       };
 
-      const leaveAnimation = {
+      const leaveAnimations = {
         'fill-up': {
           scaleY: [1, 0],
           translateY: ['0%', '100%'],
@@ -139,21 +176,51 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           scale: [1.1, 1],
           duration: 200,
           easing: 'easeInOutQuad'
+        },
+        'reveal-arrow': {
+          translateX: '32px',
+          duration: 200,
+          easing: 'easeInQuad'
         }
       };
 
       const mouseEnter = () => {
+        if(process.env.NODE_ENV === 'development') {
+          console.log("mouseEnter", hoverEffect)
+        }
         if (isAnimatingRef.current) {
           animationRef.current?.pause();
         }
         isAnimatingRef.current = true;
-        animationRef.current = anime({
-          targets: overlay,
-          ...enterAnimation[hoverEffect as keyof typeof enterAnimation],
-          complete: () => {
-            isAnimatingRef.current = false;
-          }
-        });
+
+        if (hoverEffect === 'reveal-arrow') {
+          // Animate both the arrow and the text
+          animationRef.current = anime.timeline({
+            complete: () => {
+              isAnimatingRef.current = false;
+            }
+          })
+          .add({
+            targets: overlay,
+            translateX: ['32px', '0px'],
+            duration: 200,
+            easing: 'easeOutQuad'
+          })
+          .add({
+            targets: element.querySelector('.button-text'),
+            translateX: [0, '-10px'],
+            duration: 200,
+            easing: 'easeOutQuad'
+          }, '-=200'); // Start at the same time as the arrow animation
+        } else {
+          animationRef.current = anime({
+            targets: overlay,
+            ...animations[hoverEffect as keyof typeof animations],
+            complete: () => {
+              isAnimatingRef.current = false;
+            }
+          });
+        }
       };
 
       const mouseLeave = () => {
@@ -161,13 +228,35 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           animationRef.current?.pause();
         }
         isAnimatingRef.current = true;
-        animationRef.current = anime({
-          targets: overlay,
-          ...leaveAnimation[hoverEffect as keyof typeof leaveAnimation],
-          complete: () => {
-            isAnimatingRef.current = false;
-          }
-        });
+
+        if (hoverEffect === 'reveal-arrow') {
+          // Animate both the arrow and the text back
+          animationRef.current = anime.timeline({
+            complete: () => {
+              isAnimatingRef.current = false;
+            }
+          })
+          .add({
+            targets: overlay,
+            translateX: '32px',
+            duration: 200,
+            easing: 'easeInQuad'
+          })
+          .add({
+            targets: element.querySelector('.button-text'),
+            translateX: 0,
+            duration: 200,
+            easing: 'easeInQuad'
+          }, '-=200'); // Start at the same time as the arrow animation
+        } else {
+          animationRef.current = anime({
+            targets: overlay,
+            ...leaveAnimations[hoverEffect as keyof typeof leaveAnimations],
+            complete: () => {
+              isAnimatingRef.current = false;
+            }
+          });
+        }
       };
 
       element.addEventListener('mouseenter', mouseEnter);
@@ -196,7 +285,7 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           {props.children}
-          {hoverEffect !== 'none' && (
+          {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && (
             <div
               ref={overlayRef}
               className="absolute -inset-[1px] bg-black opacity-90 pointer-events-none transform"
@@ -208,6 +297,14 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
                                hoverEffect === 'fill-in' ? 'top' : 'left'
               }}
             />
+          )}
+          {hoverEffect === 'reveal-arrow' && (
+            <div 
+              ref={overlayRef}
+              className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
+            >
+              <GoArrowUpRight className="w-4 h-4 text-white" />
+            </div>
           )}
         </a>
       )
@@ -222,7 +319,7 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
         style={buttonStyle}
         {...props}
       >
-        {hoverEffect !== 'none' && (
+        {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && (
           <div
             ref={overlayRef}
             className="absolute -inset-[1px] bg-black opacity-90 pointer-events-none transform"
@@ -235,9 +332,17 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
             }}
           />
         )}
-        <span className="relative z-10">
+        <span className="relative z-10 button-text">
           {props.children}
         </span>
+        {hoverEffect === 'reveal-arrow' && (
+          <div 
+            ref={overlayRef}
+            className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
+          >
+            <GoArrowUpRight className="w-4 h-4 text-white" />
+          </div>
+        )}
       </Comp>
     )
   }

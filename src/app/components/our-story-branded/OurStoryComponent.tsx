@@ -1,14 +1,6 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
-export const metadata = {
-  name: 'Our Story Branded',
-  type: 'Section Component',
-  description: 'A branded "Our Story" section with image and text layout',
-  tags: ['layout', 'light', 'branded'],
-  dateAdded: '2024-01-17'
-};
-
 interface OurStoryProps {
   tagline?: string;
   title?: string;

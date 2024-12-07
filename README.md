@@ -8,7 +8,8 @@ Each component follows a consistent structure:
 
 ```
 /src/app/components/[component-name]/
-├── ComponentNameComponent.tsx    # Main component file with metadata
+├── ComponentNameComponent.tsx    # Main component file
+├── metadata.ts                  # Component metadata
 └── page.tsx                     # Preview page
 ```
 
@@ -22,9 +23,10 @@ Go to http://localhost:3000/ to view the component browser.
 
 ## Component Metadata
 
-Components export metadata that provides information about their purpose and usage:
+Components have their metadata in separate `metadata.ts` files for better separation of concerns and server-side loading:
 
 ```typescript
+// metadata.ts
 export const metadata = {
   name: 'Component Display Name',
   type: 'Section Component | Hero | Card | etc',
@@ -33,6 +35,12 @@ export const metadata = {
   dateAdded: '2099-01-01' // ISO date string
 };
 ```
+
+This separation provides several benefits:
+- Keeps component files focused on rendering logic
+- Enables efficient server-side metadata loading
+- Allows metadata updates without touching component code
+- Supports both client and server components seamlessly
 
 ## 🚀 Using Components in Other Projects
 
