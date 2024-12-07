@@ -20,22 +20,22 @@ interface GymHeroProps {
 }
 
 export default function GymHeroComponent({
-  tagline = 'BEST GYM OF THE CITY FOR FITNESS',
-  title = 'YOU CAN BOOST YOUR STRENGTH',
-  description = 'Develop confidence, composure under pressure and the discipline needed to live a review. This is the style you\'ve been looking for.',
-  buttonText = 'Learn More',
+  tagline = 'PREMIER FITNESS DESTINATION',
+  title = 'TRANSFORM YOUR POTENTIAL',
+  description = 'Unlock your true strength, build lasting confidence, and achieve the results you\'ve always wanted. Experience fitness redefined with our state-of-the-art facilities and expert guidance.',
+  buttonText = 'Start Your Journey',
   backgroundColor = '#f5f5f5',
   popColor = '#ff0000',
   cards = [
     {
       image: '/images/gym-join.jpg',
-      title: 'Get GYM Membership',
-      description: 'We provide some of the finest quality, most innovative fitness equipment and services in the market.'
+      title: 'Join Our Community',
+      description: 'Access premium equipment, personalized training programs, and a motivating atmosphere designed to help you reach your fitness goals.'
     },
     {
       image: '/images/gym-instructor.jpg',
-      title: 'Be a GYM Instructor',
-      description: 'We are here to help you with nutritional perfection, motivation for a positive path healthy diet and regular.'
+      title: 'Join Our Team',
+      description: 'Looking for passionate fitness professionals to inspire and guide our members. Turn your fitness passion into a rewarding career.'
     }
   ]
 }: GymHeroProps) {

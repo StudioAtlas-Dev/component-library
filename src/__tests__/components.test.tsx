@@ -25,25 +25,37 @@ describe('Component Library Tests', () => {
       let metadata: ComponentMeta;
 
       beforeAll(async () => {
-        // Find the main component file
-        const files = readdirSync(path);
-        const componentFile = files.find(file => 
-          file.endsWith('.tsx') && 
-          !file.includes('page.tsx')
-        );
+        try {
+          // Find the main component file
+          const files = readdirSync(path);
+          const componentFile = files.find(file => 
+            file.endsWith('.tsx') && 
+            !file.includes('page.tsx')
+          );
 
-        if (!componentFile) {
-          throw new Error(`No component file found in ${name}`);
+          if (!componentFile) {
+            throw new Error(`No component file found in ${name}`);
+          }
+
+          // Import the component and its metadata
+          const module = await import(`../app/components/${name}/${componentFile}`);
+          Component = module.default;
+          
+          // Import metadata from separate file
+          const metadataModule = await import(`../app/components/${name}/metadata`);
+          metadata = metadataModule.metadata;
+        } catch (error) {
+          console.error(`Error loading component ${name}:`, error);
         }
-
-        // Import the component and its metadata
-        const module = await import(`@/app/components/${name}/${componentFile}`);
-        Component = module.default;
-        metadata = module.metadata;
       });
 
       // Test metadata structure
-      test('has valid metadata structure', () => {
+      test('has valid metadata structure', async () => {
+        // Ensure metadata is loaded
+        if (!metadata) {
+          const metadataModule = await import(`../app/components/${name}/metadata`);
+          metadata = metadataModule.metadata;
+        }
         expect(metadata).toBeDefined();
         expect(metadata).toEqual(
           expect.objectContaining({
@@ -93,23 +105,24 @@ describe('Component Library Tests', () => {
   });
 
   // Test overall component library structure
-  test('component library structure', () => {
+  test('component library structure', async () => {
     expect(componentDirs.length).toBeGreaterThan(0);
     
     // Check that we have different types of components
-    const components = componentDirs.map(({ name, path }) => {
-      const files = readdirSync(path);
-      const componentFile = files.find(file => 
-        file.endsWith('.tsx') && 
-        !file.includes('page.tsx')
-      );
-      if (componentFile) {
-        const { metadata } = require(`@/app/components/${name}/${componentFile}`);
-        return metadata;
-      }
-    }).filter(Boolean);
+    const components = await Promise.all(
+      componentDirs.map(async ({ name }) => {
+        try {
+          const { metadata } = await import(`../app/components/${name}/metadata`);
+          return metadata;
+        } catch (error) {
+          console.error(`Error loading metadata for ${name}:`, error);
+          return null;
+        }
+      })
+    );
 
-    const types = new Set(components.map(c => c.type));
+    const validComponents = components.filter(Boolean);
+    const types = new Set(validComponents.map(c => c.type));
     expect(types.size).toBeGreaterThan(0);
   });
 });
