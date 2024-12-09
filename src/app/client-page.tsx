@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ComponentGrid from '@/components/ComponentGrid';
 import FilterBar from '@/components/FilterBar';
-import { SortOption } from '@/types/component';
+import { ComponentMeta, SortOption } from '@/types/component';
 import { filterComponents } from '@/store/components';
 
 interface ClientPageProps {
-  initialComponents: any[];
+  initialComponents: ComponentMeta[];
   types: string[];
 }
 
@@ -23,27 +23,23 @@ export default function ClientPage({ initialComponents, types }: ClientPageProps
     setFilteredComponents(filtered);
   }, [search, selectedType, sortBy, initialComponents]);
 
-  const handleFilter = useCallback(() => {
-    const filtered = filterComponents(initialComponents, search, selectedType, sortBy);
-    setFilteredComponents(filtered);
-  }, [search, selectedType, sortBy, initialComponents]);
-
   return (
-    <>
-      <FilterBar
-        search={search}
-        onSearchChange={setSearch}
-        selectedType={selectedType}
-        onTypeChange={setSelectedType}
-        types={types}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        onFilter={handleFilter}
-      />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <FilterBar
+          search={search}
+          onSearchChange={setSearch}
+          selectedType={selectedType}
+          onTypeChange={setSelectedType}
+          types={types}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+        />
 
-      <div className="mt-8">
-        <ComponentGrid components={filteredComponents} />
+        <div className="mt-8">
+          <ComponentGrid components={filteredComponents} />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

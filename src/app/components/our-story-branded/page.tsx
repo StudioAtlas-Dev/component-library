@@ -1,5 +1,3 @@
-'use client';
-
 import OurStoryComponent from './OurStoryComponent';
 
 export default function Page() {

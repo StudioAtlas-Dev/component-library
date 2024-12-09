@@ -8,7 +8,6 @@ interface FilterBarProps {
   types: string[];
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
-  onFilter: () => void;
 }
 
 export default function FilterBar({
@@ -19,7 +18,6 @@ export default function FilterBar({
   types,
   sortBy,
   onSortChange,
-  onFilter,
 }: FilterBarProps) {
   return (
     <div className="flex gap-4 mb-8 items-end">
@@ -61,13 +59,6 @@ export default function FilterBar({
           <option value="Name">Name</option>
         </select>
       </div>
-
-      <button
-        onClick={onFilter}
-        className="h-10 px-8 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Filter
-      </button>
     </div>
   );
 }

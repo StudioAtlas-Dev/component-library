@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { ButtonSection } from './ButtonSection';
 
 interface OurStoryProps {
   tagline?: string;
@@ -33,13 +33,12 @@ export default function OurStoryComponent({
             {description}
           </p>
           <div>
-            <Button 
+            <ButtonSection 
+              buttonText={buttonText} 
+              popColor={popColor} 
               size="lg"
-              bgColor={popColor}
               hoverEffect="slide"
-            >
-              {buttonText}
-            </Button>
+            />
           </div>
         </div>
 

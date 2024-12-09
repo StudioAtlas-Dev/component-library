@@ -1,5 +1,3 @@
-'use client';
-
 import PhotographyHeroComponent from './PhotographyHeroComponent';
 
 export default function Page() {

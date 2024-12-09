@@ -1,11 +1,31 @@
 import { ComponentMeta } from '@/types/component';
 
+interface ComponentsResponse {
+  components: ComponentMeta[];
+  warnings?: string[];
+  error?: string;
+  details?: string | string[];
+}
+
 export async function getComponents(): Promise<ComponentMeta[]> {
-  const response = await fetch('/api/components');
-  if (!response.ok) {
-    throw new Error('Failed to fetch components');
+  try {
+    const response = await fetch('/api/components');
+    const data: ComponentsResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch components');
+    }
+
+    if (data.warnings?.length) {
+      // Log warnings but don't fail
+      console.warn('Component loading warnings:', data.warnings);
+    }
+
+    return data.components || [];
+  } catch (error) {
+    console.error('Failed to fetch components:', error);
+    throw error;
   }
-  return response.json();
 }
 
 export function filterComponents(
@@ -14,7 +34,9 @@ export function filterComponents(
   selectedType: string,
   sortBy: 'Name' | 'Date Added' = 'Name'
 ): ComponentMeta[] {
-  let filtered = [...components].filter(component => component && component.name);
+  if (!components?.length) return [];
+  
+  let filtered = [...components];
 
   // Filter by search
   if (search) {
@@ -34,12 +56,11 @@ export function filterComponents(
 
   // Sort components
   filtered.sort((a, b) => {
-    if (!a || !b) return 0;
     if (sortBy === 'Name') {
-      return (a.name || '').localeCompare(b.name || '');
+      return a.name.localeCompare(b.name);
     } else {
-      const dateA = a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
-      const dateB = b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+      const dateA = new Date(a.dateAdded).getTime();
+      const dateB = new Date(b.dateAdded).getTime();
       return dateB - dateA;
     }
   });
