@@ -13,7 +13,7 @@ interface OurStoryProps {
 export default function OurStoryComponent({
   tagline = 'OUR STORY',
   title = 'Who We Are',
-  description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  description = 'At Brewed, we\’re more than just coffee — we\’re a commitment to sustainability, community, and quality. From ethically sourced beans to eco-friendly practices, every cup we serve supports our mission to care for the planet and the people who call it home. We believe that great coffee brings people together, and we\’re proud to create a space where connection, purpose, and flavor meet.',
   buttonText = 'Reserve Your Table',
   backgroundColor = '#f6f7f9',
   popColor = '#ff5733'
