@@ -48,40 +48,59 @@ export default function WhyChooseUsComponent({
   ]
 }: WhyChooseUsProps) {
   return (
-    <div className="w-full">
+    <section 
+      className="w-full"
+      role="region"
+      aria-label="Why choose us features"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Left Section */}
         <div className="h-[500px] overflow-hidden flex" style={{ backgroundColor: popColor }}>
-            <div className="grid grid-cols-5 h-full w-full">
-              <div className="col-span-3 pt-8 px-8 lg:p-12">
-                <p className="text-sm font-bold tracking-wider mb-1 text-white/90">
-                  {tagline}
-                </p>
-                <h2 className="text-3xl sm:text-4xl lg:text-3xl xl:text-5xl font-bold text-white">
-                  {title}
-                </h2>
-              </div>
-              <div className="relative col-span-2 w-full h-full">
-                <Image
-                  src="/images/transparent-coffee.png"
-                  alt="Why Choose Us"
-                  width={1000}
-                  height={1000}
-                  className="absolute right-0 aspect-[3/4] w-auto h-[110%] -top-8 md:-top-12 lg:-top-20 min-w-[350px] md:min-w-[400px] lg:min-w-[450px] object-contain translate-x-0 lg:translate-x-12"
-                  priority
-                />
-              </div>
+          <div className="grid grid-cols-5 h-full w-full">
+            <div className="col-span-3 pt-8 px-8 lg:p-12">
+              <h3 
+                className="text-sm font-bold tracking-wider mb-1 text-white/90"
+                role="heading"
+                aria-level={1}
+                aria-label="Coffee shop services tagline"
+              >
+                {tagline}
+              </h3>
+              <h2 
+                className="text-3xl sm:text-4xl lg:text-3xl xl:text-5xl font-bold text-white"
+                role="heading"
+                aria-level={2}
+              >
+                {title}
+              </h2>
             </div>
+            <div className="relative col-span-2 w-full h-full">
+              <Image
+                src="/images/transparent-coffee.png"
+                alt="Artisanal coffee preparation showcasing our premium services"
+                width={1000}
+                height={1000}
+                className="absolute right-0 aspect-[3/4] w-auto h-[110%] -top-8 md:-top-12 lg:-top-20 min-w-[350px] md:min-w-[400px] lg:min-w-[450px] object-contain translate-x-0 lg:translate-x-12"
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Right Section - Grid of Cards */}
-        <div className="grid grid-cols-2 h-[500px]">
+        {/* Right Section - Feature Cards */}
+        <div 
+          className="grid grid-cols-2"
+          role="list"
+          aria-label="Our key features and services"
+        >
           {cards.map((card, index) => {
             const Icon = card.icon;
             return (
-              <div
+              <article
                 key={index}
                 className="p-6 flex flex-col relative group/card"
+                role="listitem"
                 style={{
                   backgroundColor: index === 0 || index === 3 ? backgroundColor : '#2b2b2b',
                   borderRight: index % 2 === 0 ? '1px solid rgba(255,255,255,0.1)' : 'none',
@@ -95,23 +114,26 @@ export default function WhyChooseUsComponent({
                 <div 
                   className="w-12 h-12 flex items-center justify-center mb-4 transition-all duration-[250ms] group-hover/card:duration-500 ease-in-out [border-radius:0.5rem] group-hover/card:[border-radius:50%]"
                   style={{ backgroundColor: popColor }}
+                  aria-hidden="true"
                 >
-                  <Icon className="w-6 h-6 text-white" />
+                  <Icon className="w-6 h-6 text-white" aria-hidden="true" />
                 </div>
                 <h3 
                   className="text-lg font-semibold mb-2 relative w-fit after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-current after:transition-all after:duration-[250ms] after:ease-in-out group-hover/card:after:w-full group-hover/card:after:duration-500" 
                   style={{ color: index === 0 || index === 3 ? '#2b2b2b' : 'white' }}
+                  role="heading"
+                  aria-level={3}
                 >
                   {card.title}
                 </h3>
                 <p className={`text-sm relative ${index === 0 || index === 3 ? 'text-gray-600' : 'text-gray-400'}`}>
                   {card.description}
                 </p>
-              </div>
+              </article>
             );
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 } 

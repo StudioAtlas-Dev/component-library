@@ -1,13 +1,5 @@
 import JobCard from '@/components/ui/JobCard';
 
-export const metadata = {
-  name: 'We Are Hiring',
-  type: 'Section Component',
-  description: 'A modern job listing section with hover effects and clear job descriptions.',
-  tags: ['layout', 'light', 'hiring'],
-  dateAdded: '2024-12-06'
-};
-
 interface JobPosition {
   title: string;
   location: string;
@@ -46,13 +38,28 @@ export default function WeAreHiringComponent({
   popColor = '#46857f'
 }: WeAreHiringProps) {
   return (
-    <div className="w-full" style={{ backgroundColor }}>
+    <section 
+      className="w-full" 
+      style={{ backgroundColor }}
+      role="region"
+      aria-label="Career opportunities"
+    >
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <p className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: popColor }}>
+          <h3 
+            className="text-sm font-semibold uppercase tracking-wider mb-3" 
+            role="heading" 
+            aria-level={1}
+            aria-label="Career opportunities section"
+            style={{ color: popColor }}
+          >
             Careers
-          </p>
-          <h2 className="text-4xl font-bold mb-4">
+          </h3>
+          <h2 
+            className="text-4xl font-bold mb-4"
+            role="heading"
+            aria-level={2}
+          >
             Join Our Expert Dentists
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -61,16 +68,24 @@ export default function WeAreHiringComponent({
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div 
+          className="space-y-6"
+          role="list"
+          aria-label="Available job positions"
+        >
           {jobPositions.map((position, index) => (
-            <JobCard
+            <article 
               key={index}
-              {...position}
-              popColor={popColor}
-            />
+              role="listitem"
+            >
+              <JobCard
+                {...position}
+                popColor={popColor}
+              />
+            </article>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -23,10 +23,20 @@ export default function OurStoryComponent({
       <div className="container mx-auto h-full grid grid-cols-1 lg:grid-cols-2 gap-12 px-4 sm:px-8 py-16">
         {/* Content */}
         <div className="flex flex-col lg:mt-[10vh] order-2 lg:order-1">
-          <h3 className="font-medium tracking-wide mb-4" style={{ color: popColor }}>
+          <h3 
+            className="font-medium tracking-wide mb-4" 
+            role="heading" 
+            aria-level={1}
+            aria-label="Company story section"
+            style={{ color: popColor }}
+          >
             {tagline}
           </h3>
-          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 
+            className="text-5xl sm:text-6xl font-bold mb-6"
+            role="heading"
+            aria-level={2}
+          >
             {title}
           </h2>
           <p className="text-gray-600 mb-8 leading-relaxed max-w-xl">
@@ -49,9 +59,11 @@ export default function OurStoryComponent({
             <div className="relative w-full h-full rounded-lg overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
               <Image
                 src="/images/square-placeholder.png"
-                alt="Our Story"
+                alt="Team members working together in our workspace"
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="lazy"
               />
             </div>
             
@@ -59,9 +71,11 @@ export default function OurStoryComponent({
             <div className="absolute right-[10%] top-[100%] -translate-y-1/2 md:-left-[15%] md:top-1/2 md:-translate-y-1/2 aspect-square w-[35%] md:w-[30%] rounded-full border-8 border-white overflow-hidden shadow-lg">
               <Image
                 src="/images/branded-placeholder.png"
-                alt="Brand Mark"
+                alt="Company brand mark highlighting our identity"
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 30vw, 15vw"
+                loading="lazy"
               />
             </div>
           </div>

@@ -37,22 +37,44 @@ export default function PhotographyHeroComponent({
         <div className="col-span-1 md:col-span-5 relative h-[350px] md:h-auto order-1 md:order-none">
           <div className="absolute left-[10%] sm:top-0 sm:left-[5%] lg:left-0 sm:w-[300px] w-[250px] md:w-[60%] min-w-[200px] aspect-[3/4] z-10">
             <div className="relative w-full h-full border-white border-[8px] rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <Image src="/images/vert-placeholder.png" alt="Placeholder" fill />
+              <Image 
+                src="/images/vert-placeholder.png" 
+                alt="Featured photography work showcasing our artistic style" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
             </div>
           </div>
           <div className="absolute top-[70%] right-[10%] sm:top-[30%] sm:right-[5%] md:right-0 sm:w-[300px] w-[250px] min-w-[200px] md:w-[60%] aspect-[3/4]">
             <div className="relative w-full h-full border-white border-[8px] rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <Image src="/images/vert-placeholder.png" alt="Placeholder" fill />
+              <Image 
+                src="/images/vert-placeholder.png" 
+                alt="Additional photography work highlighting our portfolio" 
+                fill 
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
             </div>
           </div>
         </div>
 
         {/* Right side content */}
         <div className="col-span-1 md:col-span-7 flex flex-col justify-center text-center sm:text-left items-center sm:items-start order-2 md:order-none mt-[250px] md:mt-0 lg:mt-16">
-          <h3 className="font-medium tracking-wide mb-4 text-center sm:text-left" style={{ color: popColor }}>
+          <h3 
+            className="font-medium tracking-wide mb-4 text-center sm:text-left" 
+            role="heading" 
+            aria-level={1}
+            aria-label="Photography service tagline"
+            style={{ color: popColor }}
+          >
             {tagline}
           </h3>
-          <h2 className="text-3xl sm:text-left text-center lg:text-5xl md:text-3xl font-bold mb-6">
+          <h2 
+            className="text-3xl sm:text-left text-center lg:text-5xl md:text-3xl font-bold mb-6"
+            role="heading"
+            aria-level={2}
+          >
             {title}
           </h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
@@ -65,7 +87,7 @@ export default function PhotographyHeroComponent({
               hoverEffect={hoverEffect}
               size="custom"
             />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1" role="complementary" aria-label="Business Hours">
               <span className="text-sm font-medium">{hours.weekdays}</span>
               <span className="text-sm font-medium">{hours.saturday}</span>
             </div>

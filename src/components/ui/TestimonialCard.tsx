@@ -27,14 +27,14 @@ export default function TestimonialCard({
   return (
     <div
       className={`
-        relative w-[300px] sm:w-[500px] lg:w-[600px] bg-white rounded-lg p-6 sm:p-8 shadow-lg
-        flex flex-col gap-4 sm:gap-6 max-h-[400px] sm:max-h-none aspect-[4/3] sm:aspect-[2/1]
+        relative w-[300px] w-500px md:w-[400px] h-[400px] lg:h-full lg:w-[600px] bg-white rounded-lg p-6 sm:p-8 shadow-lg
+        flex flex-col gap-4 md:gap-6 max-h-[400px] md:max-h-none aspect-[4/3] md:aspect-[2/1]
         transform transition-[transform,opacity] duration-1000
         ${isOrWillBeActive && !shouldBeInactive ? 'scale-100 opacity-100' : 'scale-95 opacity-50'}
       `}
     >
       <div className="flex-1 relative">
-        <p className="text-lg sm:text-2xl font-bold leading-relaxed text-gray-900">{quote}</p>
+        <p className="text-lg md:text-xl lg:text-2xl font-bold leading-relaxed text-gray-900">{quote}</p>
       </div>
 
       <div className="flex items-center gap-3 sm:gap-4 relative">
@@ -47,7 +47,7 @@ export default function TestimonialCard({
           />
         </div>
         <div>
-          <p className="font-semibold text-gray-900 text-sm sm:text-base">{author.name}</p>
+          <p className="font-semibold text-gray-900 text-sm md:text-base">{author.name}</p>
           <div className="flex items-center gap-2">
             <p className="text-gray-600 text-xs sm:text-sm">{author.title}</p>
           </div>
