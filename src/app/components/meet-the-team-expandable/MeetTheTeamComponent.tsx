@@ -117,7 +117,7 @@ export const MeetTheTeamComponent = ({
             className="object-cover object-top"
             sizes="100vw"
             quality={90}
-            loading="lazy" 
+            priority
           />
           <div 
             className="absolute inset-0"
