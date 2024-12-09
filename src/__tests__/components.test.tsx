@@ -7,7 +7,15 @@ import { ComponentMeta } from '@/types/component';
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => <img {...props} />
+  default: ({ fill, priority, ...props }: any) => {
+    // Convert boolean props to strings for HTML attributes
+    const imgProps = {
+      ...props,
+      'data-fill': fill ? 'true' : undefined,
+      'data-priority': priority ? 'true' : undefined
+    };
+    return <img {...imgProps} />;
+  }
 }));
 
 // Helper function to get all component directories
