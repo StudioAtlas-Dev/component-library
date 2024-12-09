@@ -1,18 +1,19 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ComponentMeta } from '@/types/component';
 
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ fill, priority, ...props }: any) => {
+  default: ({ fill, priority, loading, ...props }: any) => {
     // Convert boolean props to strings for HTML attributes
     const imgProps = {
       ...props,
       'data-fill': fill ? 'true' : undefined,
-      'data-priority': priority ? 'true' : undefined
+      'data-priority': priority ? 'true' : undefined,
+      loading: loading || 'lazy'  // Pass through loading attribute
     };
     return <img {...imgProps} />;
   }
@@ -177,6 +178,32 @@ describe('Component Library Tests', () => {
         expect(
           files.some(file => file === 'page.tsx')
         ).toBeTruthy();
+      });
+
+      // Test preloads images on hover
+      test('preloads images on hover', () => {
+        // Setup a clean document head for each test
+        document.head.innerHTML = '';
+        
+        const { container } = render(<Component />);
+        const cards = container.querySelectorAll('[role="article"]');
+        
+        // Create a promise to wait for link creation
+        const waitForPreload = () => new Promise(resolve => setTimeout(resolve, 0));
+        
+        cards.forEach(async (card) => {
+          fireEvent.mouseEnter(card);
+          await waitForPreload();
+          
+          const imageUrl = card.querySelector('img')?.getAttribute('src');
+          if (imageUrl) {
+            const preloadLinks = document.head.querySelectorAll('link[rel="preload"][as="image"]');
+            const wasPreloaded = Array.from(preloadLinks).some(link => 
+              link.getAttribute('href')?.includes(imageUrl)
+            );
+            expect(wasPreloaded).toBe(true);
+          }
+        });
       });
     });
   });

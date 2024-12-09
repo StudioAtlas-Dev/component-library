@@ -29,7 +29,7 @@ export const TeamMemberCard = ({
   expertise,
   popColor,
 }: TeamMemberCardProps) => {
-  const { expandedId, setExpandedId, isAnyExpanded } = useTeam();
+  const { expandedId, setExpandedId, isAnyExpanded, preloadImage } = useTeam();
   const isExpanded = expandedId === id;
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
@@ -62,7 +62,7 @@ export const TeamMemberCard = ({
       const handleHover = () => {
         if (window.innerWidth >= 1024) {
           animation.play();
-          setIsHovering(true);
+          preloadImage(imageUrl);
         }
       };
 
@@ -105,7 +105,7 @@ export const TeamMemberCard = ({
         ref={cardRef}
         className={`
           bg-white border border-gray-100 cursor-pointer relative
-          before:absolute before:inset-0 before:border-2 before:border-transparent before:transition-all before:duration-300
+          before:absolute before:inset-0 before:border-2 before:border-transparent before:transition-all before:duration-300 before:z-10
           hover:before:border-gray-300
           ${isExpanded ? 
             'col-span-2 row-span-4 lg:row-span-2 lg:col-span-4 z-50 transition-all duration-500 ease-in-out group rounded-lg lg:rounded-none lg:overflow-hidden' : 
@@ -125,7 +125,7 @@ export const TeamMemberCard = ({
                 {name}
               </h3>
               <p className="text-sm sm:text-md text-gray-600 mb-2">{title}</p>
-              <p className="text-xs sm:text-sm text-gray-500">{specialties}</p>
+              <p className="text-sm sm:text-sm text-gray-500">{specialties}</p>
             </div>
             <div className="absolute top-[5px] right-[5px] rotate-[-45deg]">
               <IoArrowForward 
@@ -157,7 +157,7 @@ export const TeamMemberCard = ({
                 <div className="space-y-1 lg:space-y-2">
                   <h2 className="text-lg lg:text-xl font-bold text-gray-800">{name}</h2>
                   <p className="text-sm lg:text-lg text-gray-600">{title}</p>
-                  <p className="text-xs lg:text-md text-gray-500">{specialties}</p>
+                  <p className="text-sm lg:text-md text-gray-500">{specialties}</p>
                 </div>
               </div>
             </div>
