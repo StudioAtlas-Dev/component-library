@@ -41,9 +41,11 @@ export default function TestimonialCard({
         <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0">
           <Image
             src={author.image}
-            alt={author.name}
-            fill
-            className="object-cover"
+            alt={`${author.name}, ${author.title}`}
+            width={64}
+            height={64}
+            className="rounded-full"
+            loading="lazy"
           />
         </div>
         <div>

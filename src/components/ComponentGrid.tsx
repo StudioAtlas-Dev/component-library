@@ -36,7 +36,7 @@ export default function ComponentGrid({ components }: ComponentGridProps) {
               className="object-contain bg-gray-50"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               quality={75}
-              priority={true}
+              priority
             />
             {/* Overlay with button */}
             <div className="absolute inset-0 flex items-center justify-center">

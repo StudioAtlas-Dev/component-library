@@ -105,19 +105,19 @@ export const MeetTheTeamComponent = ({
   return (
     <TeamProvider>
       <section 
-        className="relative min-h-screen w-full overflow-hidden"
+        className="relative min-h-screen w-full overflow-hidden pb-16"
         aria-label="Meet our team section"
       >
         {/* Background image container */}
         <div className="h-[60vh] relative">
           <Image
             src={backgroundImage}
-            alt=""
+            alt="Medical office interior showing our modern facilities"
             fill
             className="object-cover object-top"
-            priority={false}
             sizes="100vw"
             quality={90}
+            loading="lazy"
           />
           <div 
             className="absolute inset-0"
@@ -147,7 +147,7 @@ export const MeetTheTeamComponent = ({
             </div>
 
             {/* Team grid */}
-            <div className="grid grid-cols-4 gap-0 relative" style={{ gridTemplateRows: 'repeat(2, 150px)' }}>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 relative h-fit" style={{ gridAutoRows: '150px' }}>
               {defaultTeamMembers.map((member, index) => (
                 <TeamMemberCard
                   key={member.name}
