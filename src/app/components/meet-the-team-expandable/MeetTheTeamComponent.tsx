@@ -1,6 +1,7 @@
 import { TeamMemberCard } from '@/components/ui/TeamMemberCard';
 import Image from 'next/image';
 import { TeamProvider } from './TeamContext';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface TeamMember {
   name: string;
@@ -129,21 +130,13 @@ export const MeetTheTeamComponent = ({
         <div className="container mx-auto px-4">
           <div className="relative -mt-32"> {/* Pull content up into the gradient */}
             {/* Title section */}
-            <div className="text-center space-y-2 mb-16">
-              <p 
-                className="uppercase tracking-wider text-sm font-extrabold"
-                style={{ color: popColor }}
-              >
-                Our Team
-              </p>
-              <h2 className="text-4xl font-bold text-gray-800">
-                {heading}
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto mt-8">
-                {subheading}
-              </p>
-            </div>
-
+            <SectionTitle 
+              tagline="Our Team"
+              title={heading}
+              description={subheading}
+              popColor={popColor}
+              className="mb-12"
+            />
             {/* Team grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 relative h-fit" style={{ gridAutoRows: '150px' }}>
               {defaultTeamMembers.map((member) => (

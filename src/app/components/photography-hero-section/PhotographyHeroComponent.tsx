@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface HeroProps {
   tagline?: string;
@@ -58,25 +59,15 @@ export default function PhotographyHeroComponent({
 
         {/* Right side content */}
         <div className="col-span-1 md:col-span-7 flex flex-col justify-center text-center sm:text-left items-center sm:items-start order-2 md:order-none mt-[250px] md:mt-0 lg:mt-16">
-          <h3 
-            className="font-medium tracking-wide mb-4 text-center sm:text-left" 
-            role="heading" 
-            aria-level={1}
-            aria-label="Photography service tagline"
-            style={{ color: popColor }}
-          >
-            {tagline}
-          </h3>
-          <h2 
-            className="text-3xl sm:text-left text-center lg:text-5xl md:text-3xl font-bold mb-6"
-            role="heading"
-            aria-level={2}
-          >
-            {title}
-          </h2>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            {description}
-          </p>
+          <SectionTitle
+            tagline="Crafting Stories, One Frame at a Time"
+            title={title}
+            titleClassName="text-3xl lg:text-5xl md:text-3xl "
+            description={description}
+            popColor={popColor}
+            alignLeft
+            className="mb-8"
+          />
           <div className="flex flex-col sm:flex-row gap-8 items-start">
             <ProgressiveButton
               href="#"

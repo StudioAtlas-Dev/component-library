@@ -1,5 +1,6 @@
 import { InputSection } from './InputSection';
 import Image from 'next/image';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface SubscribeComponentProps {
   // Optional custom color for the component's interactive elements
@@ -77,19 +78,15 @@ export const SubscribeComponent = ({
       
       <div className="relative z-10 container mx-auto px-4 h-full flex items-center">
         <div className="w-full max-w-3xl mx-auto text-center space-y-4">
-          <p
-            className="uppercase tracking-wider text-sm font-bold"
-            style={{ color: popColor }}
-          >
-            NEWSLETTER
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            {heading}
-          </h2>
-          <p className="text-gray-200 max-w-2xl mx-auto pb-6">
-            {description}
-          </p>
-
+          <SectionTitle
+            tagline="Newsletter"
+            title={heading}
+            description={description}
+            popColor={popColor}
+            descriptionClassName="pb-6"
+            dark
+            className="w-full max-w-3xl mx-auto space-y-4"
+          />
           {/* Input section with subscription functionality */}
           <InputSection 
             buttonText={buttonText}

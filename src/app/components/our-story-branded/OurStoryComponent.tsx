@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface OurStoryProps {
   tagline?: string;
@@ -23,25 +24,15 @@ export default function OurStoryComponent({
       <div className="container mx-auto h-full grid grid-cols-1 lg:grid-cols-2 gap-12 px-4 sm:px-8 py-16">
         {/* Content */}
         <div className="flex flex-col lg:mt-[10vh] order-2 lg:order-1">
-          <h3 
-            className="font-medium tracking-wide mb-4" 
-            role="heading" 
-            aria-level={1}
-            aria-label="Company story section"
-            style={{ color: popColor }}
-          >
-            {tagline}
-          </h3>
-          <h2 
-            className="text-5xl sm:text-6xl font-bold mb-6"
-            role="heading"
-            aria-level={2}
-          >
-            {title}
-          </h2>
-          <p className="text-gray-600 mb-8 leading-relaxed max-w-xl">
-            {description}
-          </p>
+          <SectionTitle
+            tagline={tagline}
+            title={title}
+            titleClassName="text-5xl sm:text-6xl"
+            description={description}
+            popColor={popColor}
+            alignLeft
+            className="mb-8"
+          />
           <div>
             <ProgressiveButton
               href="#"

@@ -1,4 +1,5 @@
 import JobCard from '@/components/ui/JobCard';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface JobPosition {
   title: string;
@@ -46,26 +47,14 @@ export default function WeAreHiringComponent({
     >
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h3 
-            className="text-sm font-semibold uppercase tracking-wider mb-3" 
-            role="heading" 
-            aria-level={1}
-            aria-label="Career opportunities section"
-            style={{ color: popColor }}
-          >
-            Careers
-          </h3>
-          <h2 
-            className="text-4xl font-bold mb-4"
-            role="heading"
-            aria-level={2}
-          >
-            Join Our Expert Dentists
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Join our talented team and make a difference in people's lives. We offer a supportive work environment
-            where you can grow professionally while delivering exceptional patient care.
-          </p>
+          <SectionTitle
+            tagline="Careers"
+            title="Join Our Expert Dentists"
+            description="Join our talented team and make a difference in people's lives. We offer a supportive work environment
+            where you can grow professionally while delivering exceptional patient care."
+            popColor={popColor}
+            className=""
+          />
         </div>
 
         <div 

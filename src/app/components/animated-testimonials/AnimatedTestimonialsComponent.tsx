@@ -1,4 +1,5 @@
 import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface TestimonialData {
   quote: string;
@@ -53,27 +54,13 @@ export default function AnimatedTestimonialsComponent({
       aria-label="Client testimonials"
     >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h3 
-            className="text-sm font-semibold uppercase tracking-wider mb-3" 
-            role="heading" 
-            aria-level={1}
-            aria-label="Client testimonials section"
-            style={{ color: popColor }}
-          >
-            Testimonials
-          </h3>
-          <h2 
-            className="text-4xl font-bold mb-4"
-            role="heading"
-            aria-level={2}
-          >
-            Built by developers, refined by experience
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Our components are battle-tested in production by teams who value quality, performance, and developer experience.
-          </p>
-        </div>
+        <SectionTitle
+          tagline="Testimonials"
+          title="Built by developers, refined by experience"
+          description="Our components are battle-tested in production by teams who value quality, performance, and developer experience."
+          popColor="#2563eb"
+          className="mb-12"
+        />
 
         <div 
           className="relative w-full overflow-hidden"

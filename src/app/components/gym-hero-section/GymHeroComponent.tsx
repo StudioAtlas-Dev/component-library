@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
+import SectionTitle from '@/components/ui/SectionTitle';
 
 interface FeatureCard {
   image: string;
@@ -61,27 +62,19 @@ export default function GymHeroComponent({
 
       {/* Hero Content - fixed height */}
       <div className="relative h-[80vh] w-full">
-        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 md:text-left text-center">
           <div className="flex flex-col justify-center h-full pb-32">
-            <h3 
-              className="text-sm font-bold tracking-wider mb-4" 
-              role="heading" 
-              aria-level={1}
-              aria-label="Fitness center tagline"
-              style={{ color: popColor }}
-            >
-              {tagline}
-            </h3>
-            <h2 
-              className="text-4xl md:text-6xl font-bold text-white mb-6 max-w-2xl"
-              role="heading"
-              aria-level={2}
-            >
-              {title}
-            </h2>
-            <p className="text-gray-200 text-lg mb-8 max-w-2xl">
-              {description}
-            </p>
+            <SectionTitle
+              tagline={tagline}
+              title={title}
+              taglineClassName="tracking-widest"
+              titleClassName="text-4xl md:text-6xl max-w-2xl"
+              alignLeft
+              dark
+              description={description}
+              popColor={popColor}
+              className="mb-8"
+            />
             <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <ProgressiveButton  
                 href={buttonHref}
