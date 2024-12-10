@@ -13,7 +13,6 @@ interface TeamMember {
 }
 
 interface MeetTheTeamComponentProps {
-  variant?: 'light' | 'dark';
   backgroundImage?: string;
   heading?: string;
   subheading?: string;

@@ -5,8 +5,28 @@ import { cn } from '@/lib/utils'
 import anime from 'animejs'
 import { GoArrowUpRight } from 'react-icons/go'
 
+/**
+ * Available hover animation effects for the button.
+ * - none: No animation
+ * - fill-in: Background color fills in from center
+ * - fill-up: Background color fills up from bottom
+ * - pulse: Button scales up slightly
+ * - slide: Background slides in from left
+ * - reveal-arrow: Reveals an arrow icon on hover
+ * - reveal-icon: Reveals a custom icon on hover
+ */
 export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow' | 'reveal-icon';
 
+/**
+ * Button variant styles using class-variance-authority.
+ * Provides consistent styling with variants for different use cases.
+ * 
+ * Base styles include:
+ * - Flexbox layout for content alignment
+ * - Focus states for accessibility
+ * - Disabled states
+ * - Overflow handling for animations
+ */
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 overflow-hidden relative",
   {
@@ -48,12 +68,32 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
   VariantProps<typeof buttonVariants> {
+  /** Enable Radix UI Slot pattern for custom element rendering */
   asChild?: boolean
+  /** Custom background color (overrides variant) */
   bgColor?: string
+  /** Animation effect on hover */
   hoverEffect?: ButtonHoverEffect
+  /** Custom icon for reveal-icon effect */
   icon?: React.ReactNode
 }
 
+/**
+ * Enhanced button component with animation effects.
+ * 
+ * Features:
+ * - Multiple style variants and sizes
+ * - Hover animation effects using AnimeJS
+ * - Progressive enhancement via ProgressiveButton wrapper
+ * - Custom background colors
+ * - Icon reveal animations
+ * 
+ * Animation System:
+ * - Uses AnimeJS for smooth, performant animations
+ * - Handles animation interruption and cleanup
+ * - Maintains animation state to prevent conflicts
+ * - Provides separate enter/leave animations for each effect
+ */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, style, icon: Icon, ...props }, ref) => {
     const elementRef = React.useRef<HTMLButtonElement | null>(null)
@@ -61,6 +101,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const animationRef = React.useRef<anime.AnimeInstance | null>(null)
     const isAnimatingRef = React.useRef(false)
 
+    // Merge forwarded ref with local ref for animation control
     const mergedRef = React.useMemo(() => {
       return (node: HTMLButtonElement | null) => {
         if (typeof ref === 'function') ref(node)
@@ -75,6 +116,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       const element = elementRef.current
       const overlay = overlayRef.current
 
+      // Animation configurations for each hover effect
       const animations = {
         'fill-up': {
           scaleY: [0, 1],
@@ -109,6 +151,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }
       }
 
+      // Exit animations for smooth transitions
       const leaveAnimations = {
         'fill-up': {
           scaleY: [1, 0],
@@ -143,11 +186,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }
       }
 
+      // Handle mouse enter animation
       const mouseEnter = () => {
+        // Cancel any running animations to prevent conflicts
         if (isAnimatingRef.current) animationRef.current?.pause()
         isAnimatingRef.current = true
 
         if (hoverEffect === 'reveal-arrow' || hoverEffect === 'reveal-icon') {
+          // Special handling for icon reveal effects
           const textElement = element.querySelector('.button-text')
           if (textElement) anime.set(textElement, { color: '#fff' })
           animationRef.current = anime.timeline({
@@ -166,6 +212,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               easing: 'easeOutQuad'
             }, '-=200')
         } else {
+          // Standard hover effects
           animationRef.current = anime({
             targets: overlay,
             ...animations[hoverEffect as keyof typeof animations],
@@ -174,6 +221,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }
       }
 
+      // Handle mouse leave animation
       const mouseLeave = () => {
         if (isAnimatingRef.current) animationRef.current?.pause()
         isAnimatingRef.current = true
@@ -207,9 +255,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }
       }
 
+      // Attach event listeners
       element.addEventListener('mouseenter', mouseEnter)
       element.addEventListener('mouseleave', mouseLeave)
 
+      // Cleanup event listeners and animations
       return () => {
         element.removeEventListener('mouseenter', mouseEnter)
         element.removeEventListener('mouseleave', mouseLeave)
@@ -221,7 +271,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ? { ...style, backgroundColor: bgColor } as React.CSSProperties
       : style
 
-    // If asChild = false, return the original button structure (no modifications)
+    // Render button with or without Radix UI Slot
     if (!asChild) {
       return (
         <button
