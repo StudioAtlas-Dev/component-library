@@ -45,7 +45,7 @@ export const TeamMemberCard = ({
       const animation = anime({
         targets: iconElement,
         scale: [1, 1.2, 1],
-        translateX: [0, 5, 0],
+        translateX: [0, 2, 0],
         duration: 1200,
         easing: 'easeInOutQuad',
         loop: true,
@@ -63,6 +63,7 @@ export const TeamMemberCard = ({
         if (window.innerWidth >= 1024) {
           animation.play();
           preloadImage(imageUrl);
+          setIsHovering(true);
         }
       };
 
@@ -78,6 +79,7 @@ export const TeamMemberCard = ({
 
       return () => {
         animation.pause();
+        animation.seek(0);
         if (iconElement instanceof HTMLElement) {
           iconElement.style.willChange = 'auto';
         }
@@ -85,7 +87,7 @@ export const TeamMemberCard = ({
         element.removeEventListener('mouseleave', handleLeave);
       };
     }
-  }, []);
+  }, [isExpanded]);
 
   return (
     <>
@@ -103,8 +105,8 @@ export const TeamMemberCard = ({
       
       <div 
         ref={cardRef}
-        className={`
-          bg-white border border-gray-100 cursor-pointer relative
+        style={{ '--pop-color': popColor } as React.CSSProperties}
+        className={`bg-white border border-gray-100 cursor-pointer relative
           before:absolute before:inset-0 before:border-2 before:border-transparent before:transition-all before:duration-300 before:z-10
           hover:before:border-gray-300
           ${isExpanded ? 
@@ -121,15 +123,15 @@ export const TeamMemberCard = ({
         {!isExpanded && (
           <>
             <div className="p-4 sm:p-6">
-            <h3 className={`text-base sm:text-lg  xl:text-xl font-bold text-gray-800 mb-2 transition-colors duration-300 group-hover:text-[${popColor}]`}>
+              <h3 className="text-base sm:text-lg xl:text-xl font-bold text-gray-800 mb-2 transition-colors duration-300 group-hover:[color:var(--pop-color)]">
                 {name}
               </h3>
               <p className="text-sm sm:text-md text-gray-600 mb-2">{title}</p>
-              <p className="text-sm sm:text-sm text-gray-500">{specialties}</p>
+              <p className="text-xs sm:text-sm text-gray-500">{specialties}</p>
             </div>
             <div className="absolute top-[5px] right-[5px] rotate-[-45deg]">
               <IoArrowForward 
-                className={`expand-icon text-gray-400 text-lg sm:text-xl transition-colors duration-300 group-hover:text-[${popColor}]`}
+                className="expand-icon text-gray-400 text-lg sm:text-xl transition-colors duration-300 group-hover:[color:var(--pop-color)]"
                 aria-label="Expand details"
               />
             </div>
@@ -178,7 +180,7 @@ export const TeamMemberCard = ({
 
             <div className="absolute top-6 right-6">
               <IoClose 
-                className={`text-gray-400 text-xl lg:text-2xl transition-colors duration-300 group-hover:text-[${popColor}]`}
+                className="text-gray-400 text-xl lg:text-2xl transition-colors duration-300 group-hover:[color:var(--pop-color)]"
                 aria-label="Close details"
               />
             </div>
