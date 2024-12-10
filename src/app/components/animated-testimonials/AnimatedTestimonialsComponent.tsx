@@ -1,5 +1,3 @@
-'use client';
-
 import TestimonialCarousel from '@/components/ui/TestimonialCarousel';
 
 interface TestimonialData {

@@ -1,7 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ButtonHoverEffect } from '@/components/ui/button';
-import { ButtonSection } from './ButtonSection';
+import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 
 interface HeroProps {
   tagline?: string;
@@ -12,7 +10,7 @@ interface HeroProps {
     weekdays: string;
     saturday: string;
   };
-  hoverEffect?: ButtonHoverEffect;
+  hoverEffect: "slide";
   backgroundColor?: string;
   popColor?: string;
 }
@@ -26,7 +24,6 @@ export default function PhotographyHeroComponent({
     weekdays: 'MON - FRI: 10AM - 6PM',
     saturday: 'SATURDAY: 10AM - 4PM'
   },
-  hoverEffect = 'slide',
   backgroundColor = '#f6f7f9',
   popColor = '#46857f'
 }: HeroProps) {
@@ -81,12 +78,16 @@ export default function PhotographyHeroComponent({
             {description}
           </p>
           <div className="flex flex-col sm:flex-row gap-8 items-start">
-            <ButtonSection 
-              buttonText={buttonText} 
-              popColor={popColor} 
-              hoverEffect={hoverEffect}
-              size="custom"
-            />
+            <ProgressiveButton
+              href="#"
+              variant="default"
+              size="lg"
+              className="rounded-md"
+              style={{ backgroundColor: popColor }}
+              hoverEffect="slide"
+            >
+              {buttonText}
+            </ProgressiveButton>
             <div className="flex flex-col gap-1" role="complementary" aria-label="Business Hours">
               <span className="text-sm font-medium">{hours.weekdays}</span>
               <span className="text-sm font-medium">{hours.saturday}</span>

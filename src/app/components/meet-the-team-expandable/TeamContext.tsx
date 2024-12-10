@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import Head from 'next/head';
 
 interface TeamContextType {
   expandedId: string | null;

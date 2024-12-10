@@ -24,7 +24,6 @@ export const TeamMemberCard = ({
   title,
   specialties,
   imageUrl,
-  alt,
   professionalBackground,
   expertise,
   popColor,

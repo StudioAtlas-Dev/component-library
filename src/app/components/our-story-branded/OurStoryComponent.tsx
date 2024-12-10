@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ButtonSection } from './ButtonSection';
+import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 
 interface OurStoryProps {
   tagline?: string;
@@ -43,12 +43,16 @@ export default function OurStoryComponent({
             {description}
           </p>
           <div>
-            <ButtonSection 
-              buttonText={buttonText} 
-              popColor={popColor} 
+            <ProgressiveButton
+              href="#"
+              variant="default"
               size="lg"
+              className="rounded-md"
+              style={{ backgroundColor: popColor }}
               hoverEffect="slide"
-            />
+            >
+              {buttonText}
+            </ProgressiveButton>
           </div>
         </div>
 

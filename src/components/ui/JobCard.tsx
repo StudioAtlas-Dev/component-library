@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { MdLocationOn } from 'react-icons/md';
 import { BiTimeFive } from 'react-icons/bi';
-import { Button } from '@/components/ui/button';
+import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 import anime from 'animejs';
 
 interface JobCardProps {
@@ -114,14 +114,15 @@ export default function JobCard({
           </p>
         </div>
         <div className="w-full sm:w-auto">
-          <Button
+          <ProgressiveButton
             className="w-full sm:w-auto"
             size="grid"
+            href="#"
             hoverEffect="slide"
-            bgColor={popColor}
+            style={{ backgroundColor: popColor }}
           >
             Apply Now
-          </Button>
+          </ProgressiveButton>
         </div>
       </div>
     </div>

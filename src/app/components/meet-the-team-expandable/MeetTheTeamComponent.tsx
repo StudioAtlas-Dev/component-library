@@ -96,7 +96,6 @@ const defaultTeamMembers: TeamMember[] = [
 ];
 
 export const MeetTheTeamComponent = ({
-  variant = 'light',
   backgroundImage = '/images/doctor-background.jpg',
   heading = 'Meet Our Team',
   subheading = 'Our team brings together expertise and dedication to provide exceptional care.',
@@ -148,7 +147,7 @@ export const MeetTheTeamComponent = ({
 
             {/* Team grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 relative h-fit" style={{ gridAutoRows: '150px' }}>
-              {defaultTeamMembers.map((member, index) => (
+              {defaultTeamMembers.map((member) => (
                 <TeamMemberCard
                   key={member.name}
                   id={member.name}

@@ -1,7 +1,5 @@
-'use client';
-
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 
 interface FeatureCard {
   image: string;
@@ -14,6 +12,7 @@ interface GymHeroProps {
   title?: string;
   description?: string;
   buttonText?: string;
+  buttonHref?: string;
   backgroundColor?: string;
   popColor?: string;
   cards?: FeatureCard[];
@@ -24,6 +23,7 @@ export default function GymHeroComponent({
   title = 'TRANSFORM YOUR POTENTIAL',
   description = 'Unlock your true strength, build lasting confidence, and achieve the results you\'ve always wanted. Experience fitness redefined with our state-of-the-art facilities and expert guidance.',
   buttonText = 'Start Your Journey',
+  buttonHref = '#',
   backgroundColor = '#f5f5f5',
   popColor = '#ff0000',
   cards = [
@@ -82,21 +82,23 @@ export default function GymHeroComponent({
             <p className="text-gray-200 text-lg mb-8 max-w-2xl">
               {description}
             </p>
-            <Button 
-              size="lg"
-              className="w-fit overflow-hidden"
-              style={{ backgroundColor: popColor }}
-              hoverEffect="reveal-arrow"
-            >
-              <span className="relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <ProgressiveButton  
+                href={buttonHref}
+                variant="default"
+                size="lg"
+                className="rounded-md"
+                style={{ backgroundColor: popColor }}
+                hoverEffect="reveal-arrow"
+              >
                 {buttonText}
-              </span>
-            </Button>
+              </ProgressiveButton>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Feature Cards - same position regardless of background */}
+      {/* Feature Cards */}
       <div className="relative -mt-32 mb-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div 
@@ -105,13 +107,12 @@ export default function GymHeroComponent({
             aria-label="Membership options"
           >
             {cards.map((card, index) => (
-              <article
+              <div
                 key={index}
                 className="rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-row md:flex-row"
                 style={{ backgroundColor: backgroundColor }}
                 role="listitem"
               >
-                {/* Image container - make it smaller on mobile */}
                 <div className="relative h-32 md:h-auto w-1/3 md:w-2/5 md:min-h-[240px]">
                   <Image
                     src={card.image}
@@ -122,7 +123,6 @@ export default function GymHeroComponent({
                     loading="lazy"
                   />
                 </div>
-                {/* Content container - more compact on mobile */}
                 <div className="p-4 md:p-8 w-2/3 md:w-3/5 flex flex-col">
                   <div className="flex-grow md:flex md:flex-col md:justify-between">
                     <div className="text-left">
@@ -133,7 +133,9 @@ export default function GymHeroComponent({
                       >
                         {card.title}
                       </h3>
-                      <p className="text-gray-600 mt-2 text-sm md:text-base hidden md:block">{card.description}</p>
+                      <p className="text-gray-600 mt-2 text-sm md:text-base hidden md:block">
+                        {card.description}
+                      </p>
                     </div>
                     <div className="mt-2 md:mt-4">
                       <span 
@@ -147,7 +149,7 @@ export default function GymHeroComponent({
                     </div>
                   </div>
                 </div>
-              </article>
+              </div>
             ))}
           </div>
         </div>

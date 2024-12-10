@@ -2,6 +2,10 @@
 
 A modern, reusable component library built with Next.js 14, TypeScript, and Tailwind CSS. Some components are also built with Anime.js for animations. This library serves as a collection of pre-built components and layouts that can be easily imported and customized for use in other projects.
 
+This project also facilitates learning for me in terms of implementation of progressive enhancement, accessibility, and SEO best practices using Next.js. The intention is to both have these components be fully functional and accessible, but also to have them be performant and SEO friendly. For this reason, I have implemented testing and tried to ensure anything that will be SEO crawled is appropriately rendered.
+
+Can several of things be accomplished without using Anime.js (just as an example used within the project)? Sure, but I wanted to learn how to use both it better and how to use progressive enhancement for server-side rendering into client-side rendering post-hydration with JS animation.
+
 ## 📚 Component Structure
 
 Each component follows a consistent structure:

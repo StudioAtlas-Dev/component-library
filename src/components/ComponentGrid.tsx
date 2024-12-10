@@ -44,7 +44,7 @@ export default function ComponentGrid({ components }: ComponentGridProps) {
               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <Button 
                   size="grid" 
-                  bgColor="#2563eb"
+                  style={{backgroundColor:"#2563eb"}}
                   hoverEffect="fill-in"
                   aria-label={`View live preview of ${component.name}`}
                 >
