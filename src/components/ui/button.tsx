@@ -76,6 +76,8 @@ export interface ButtonProps
   hoverEffect?: ButtonHoverEffect
   /** Custom icon for reveal-icon effect */
   icon?: React.ReactNode
+  /** Color for hover animation overlay */
+  hoverColor?: string
 }
 
 /**
@@ -95,7 +97,7 @@ export interface ButtonProps
  * - Provides separate enter/leave animations for each effect
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, style, icon: Icon, ...props }, ref) => {
+  ({ className, variant, size, hoverEffect = 'none', asChild = false, bgColor, hoverColor = 'black', style, icon: Icon, ...props }, ref) => {
     const elementRef = React.useRef<HTMLButtonElement | null>(null)
     const overlayRef = React.useRef<HTMLDivElement>(null)
     const animationRef = React.useRef<anime.AnimeInstance | null>(null)
@@ -287,7 +289,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {hoverEffect === 'reveal-arrow' && (
             <div
               ref={overlayRef}
-              className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
+              className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
+              style={{ backgroundColor: hoverColor }}
             >
               <GoArrowUpRight className="w-4 h-4 text-white" />
             </div>
@@ -295,7 +298,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {hoverEffect === 'reveal-icon' && Icon && (
             <div
               ref={overlayRef}
-              className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
+              className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
+              style={{ backgroundColor: hoverColor }}
             >
               {Icon}
             </div>
@@ -303,8 +307,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && hoverEffect !== 'reveal-icon' && (
             <div
               ref={overlayRef}
-              className="absolute inset-0 bg-black/90 pointer-events-none transform"
+              className="absolute inset-0 pointer-events-none transform"
               style={{
+                backgroundColor: hoverColor,
                 transform: hoverEffect === 'fill-up' ? 'scaleY(0) translateY(100%)' :
                   hoverEffect === 'fill-in' ? 'scaleY(0)' :
                     hoverEffect === 'slide' ? 'translateX(-100%)' : 'scale(1)',
@@ -321,49 +326,50 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // ProgressiveButton will pass a single React element (like <Link>...) as children.
     // We must return exactly one child to Slot. We clone that child to insert text & overlays.
     const child = React.Children.only(props.children) as React.ReactElement
-    const cloned = React.cloneElement(child, {
-      className: cn(buttonVariants({ variant, size, className }), "group", child.props.className),
-      ref: mergedRef,
-      style: { ...buttonStyle, ...child.props.style }
-    },
-      <>
-        <span className="relative z-10 button-text">
-          {child.props.children}
-        </span>
-        {hoverEffect === 'reveal-arrow' && (
-          <div
-            ref={overlayRef}
-            className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
-          >
-            <GoArrowUpRight className="w-4 h-4 text-white" />
-          </div>
-        )}
-        {hoverEffect === 'reveal-icon' && Icon && (
-          <div
-            ref={overlayRef}
-            className="absolute top-0 right-0 h-full w-[32px] bg-black/90 flex items-center justify-center transform translate-x-[32px]"
-          >
-            {Icon}
-          </div>
-        )}
-        {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && hoverEffect !== 'reveal-icon' && (
-          <div
-            ref={overlayRef}
-            className="absolute inset-0 bg-black/90 pointer-events-none transform"
-            style={{
-              transform: hoverEffect === 'fill-up' ? 'scaleY(0) translateY(100%)' :
-                hoverEffect === 'fill-in' ? 'scaleY(0)' :
-                  hoverEffect === 'slide' ? 'translateX(-100%)' : 'scale(1)',
-              transformOrigin: hoverEffect === 'fill-up' ? 'bottom' :
-                hoverEffect === 'fill-in' ? 'top' : 'left'
-            }}
-          />
-        )}
-      </>)
-
     return (
       <Slot>
-        {cloned}
+        {React.cloneElement(child, {
+          className: cn(buttonVariants({ variant, size, className }), "group", child.props.className),
+          ref: mergedRef,
+          style: { ...buttonStyle, ...child.props.style }
+        },
+          <>
+            <span className="relative z-10 button-text">
+              {child.props.children}
+            </span>
+            {hoverEffect === 'reveal-arrow' && (
+              <div
+                ref={overlayRef}
+                className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
+                style={{ backgroundColor: hoverColor }}
+              >
+                <GoArrowUpRight className="w-4 h-4 text-white" />
+              </div>
+            )}
+            {hoverEffect === 'reveal-icon' && Icon && (
+              <div
+                ref={overlayRef}
+                className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
+                style={{ backgroundColor: hoverColor }}
+              >
+                {Icon}
+              </div>
+            )}
+            {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && hoverEffect !== 'reveal-icon' && (
+              <div
+                ref={overlayRef}
+                className="absolute inset-0 pointer-events-none transform"
+                style={{
+                  backgroundColor: hoverColor,
+                  transform: hoverEffect === 'fill-up' ? 'scaleY(0) translateY(100%)' :
+                    hoverEffect === 'fill-in' ? 'scaleY(0)' :
+                      hoverEffect === 'slide' ? 'translateX(-100%)' : 'scale(1)',
+                  transformOrigin: hoverEffect === 'fill-up' ? 'bottom' :
+                    hoverEffect === 'fill-in' ? 'top' : 'left'
+                }}
+              />
+            )}
+          </>)}
       </Slot>
     )
   }

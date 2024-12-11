@@ -55,6 +55,8 @@ interface ProgressiveButtonProps {
   style?: React.CSSProperties;
   /** Animation effect on hover (only active after hydration) */
   hoverEffect?: ButtonHoverEffect;
+  /** Color for hover animation overlay */
+  hoverColor?: string;
 }
 
 export function ProgressiveButton({
@@ -65,6 +67,7 @@ export function ProgressiveButton({
   style,
   children,
   hoverEffect = 'none',
+  hoverColor = 'black',
 }: ProgressiveButtonProps) {
   // Track hydration state for progressive enhancement
   const [hydrated, setHydrated] = React.useState(false);
@@ -76,11 +79,10 @@ export function ProgressiveButton({
 
   if (!hydrated) {
     // SSR/Initial Load: Render basic link with button styling
-    // This ensures functionality without JS and optimal SEO
     return (
       <Link
         href={href}
-        className={cn(buttonVariants({ variant, size }), className)}
+        className={cn(buttonVariants({ variant, size, hoverEffect }), className)}
         style={style}
       >
         {children}
@@ -89,15 +91,15 @@ export function ProgressiveButton({
   }
 
   // Client-side: Enhanced version with full interactivity
-  // Uses Button component which includes hover animations and effects
   return (
     <Button
       asChild
       variant={variant}
       size={size}
-      className={cn(className)}
+      className={className}
       style={style}
       hoverEffect={hoverEffect}
+      hoverColor={hoverColor}
     >
       <Link href={href}>
         {children}
