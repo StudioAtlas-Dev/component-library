@@ -11,7 +11,6 @@ interface HeroProps {
     weekdays: string;
     saturday: string;
   };
-  hoverEffect: "slide";
   backgroundColor?: string;
   popColor?: string;
 }
@@ -60,7 +59,7 @@ export default function PhotographyHeroComponent({
         {/* Right side content */}
         <div className="col-span-1 md:col-span-7 flex flex-col justify-center text-center sm:text-left items-center sm:items-start order-2 md:order-none mt-[250px] md:mt-0 lg:mt-16">
           <SectionTitle
-            tagline="Crafting Stories, One Frame at a Time"
+            tagline={tagline}
             title={title}
             titleClassName="text-3xl lg:text-5xl md:text-3xl "
             description={description}
