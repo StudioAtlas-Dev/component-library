@@ -36,7 +36,11 @@ export default function ContactSectionComponent({
     const iconBackground = popColor.replace(')', ', 0.15)');
 
     return (
-        <section className="w-full py-16 px-8 md:px-12" style={{ backgroundColor }}>
+        <section 
+            className="w-full py-16 px-8 md:px-12" 
+            style={{ backgroundColor }}
+            aria-label="Contact methods"
+        >
             <div className="max-w-7xl mx-auto">
                 <SectionTitle
                     tagline={tagline}
@@ -47,14 +51,14 @@ export default function ContactSectionComponent({
                     popColor={popColor}
                 />
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-8 gap-16 mt-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-8 gap-16 mt-12" role="list">
                     {/* Email Section */}
-                    <div className="flex flex-col items-start space-y-4">
-                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }}>
+                    <div className="flex flex-col items-start space-y-4" role="listitem">
+                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }} aria-hidden="true">
                             <MdEmail className="w-6 h-6" style={{ color: popColor }} />
                         </div>
-                        <h3 className="text-xl font-semibold">Email</h3>
-                        <p className="text-gray-600 mb-4">
+                        <h3 className="text-2xl font-semibold" id="email-heading">Email</h3>
+                        <p className="text-gray-600 mb-4" aria-describedby="email-heading">
                             Send us an email and we'll get back to you within 24 hours.
                         </p>
                         <ProgressiveButton
@@ -65,7 +69,8 @@ export default function ContactSectionComponent({
                             style={{ backgroundColor: popColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={lighterColor}
-                            target="_blank" 
+                            target="_blank"
+                            aria-label="Send us an email"
                         >
                             {email}
                         </ProgressiveButton>
@@ -73,23 +78,24 @@ export default function ContactSectionComponent({
 
                     {/* Live Chat Section */}
                     {chatEnabled && (
-                        <div className="flex flex-col items-start space-y-4">
-                            <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }}>
+                        <div className="flex flex-col items-start space-y-4" role="listitem">
+                            <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }} aria-hidden="true">
                                 <MdChat className="w-6 h-6" style={{ color: popColor }} />
                             </div>
-                            <h3 className="text-xl font-semibold">Live chat</h3>
-                            <p className="text-gray-600 mb-4">
+                            <h3 className="text-2xl font-semibold" id="chat-heading">Live chat</h3>
+                            <p className="text-gray-600 mb-4" aria-describedby="chat-heading">
                                 Chat with our support team in real-time for immediate assistance.
                             </p>
                             <ProgressiveButton 
                                 href={chatUrl}
                                 variant="default"
                                 size="lg"
-                                className="text-md hover:text-black border border-transparent hover:border-black" 
+                                className="text-md hover:text-black border border-transparent hover:border-black"
                                 style={{ backgroundColor: lighterColor }}
                                 hoverEffect={hoverEffect}
                                 hoverColor={backgroundColor}
                                 target="_blank"
+                                aria-label="Start live chat in new window"
                             >
                                 Start new chat
                             </ProgressiveButton>
@@ -97,46 +103,48 @@ export default function ContactSectionComponent({
                     )}
 
                     {/* Phone Section */}
-                    <div className="flex flex-col items-start space-y-4">
-                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }}>
+                    <div className="flex flex-col items-start space-y-4" role="listitem">
+                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }} aria-hidden="true">
                             <MdPhone className="w-6 h-6" style={{ color: popColor }} />
                         </div>
-                        <h3 className="text-xl font-semibold">Phone</h3>
-                        <p className="text-gray-600 mb-4">
+                        <h3 className="text-2xl font-semibold" id="phone-heading">Phone</h3>
+                        <p className="text-gray-600 mb-4" aria-describedby="phone-heading">
                             Call us during business hours for immediate support.
                         </p>
                         <ProgressiveButton
                             href={`tel:${phone}`}
                             variant="default"
                             size="lg"
-                            className="text-md hover:text-black border border-transparent hover:border-black " 
+                            className="text-md hover:text-black border border-transparent hover:border-black"
                             style={{ backgroundColor: lighterColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={backgroundColor}
                             target="_blank"
+                            aria-label="Call us"
                         >
                             {phone}
                         </ProgressiveButton>
                     </div>
 
                     {/* Office Section */}
-                    <div className="flex flex-col items-start space-y-4">
-                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }}>
+                    <div className="flex flex-col items-start space-y-4" role="listitem">
+                        <div className="p-3 rounded-full" style={{ backgroundColor: iconBackground }} aria-hidden="true">
                             <MdLocationOn className="w-6 h-6" style={{ color: popColor }} />
                         </div>
-                        <h3 className="text-xl font-semibold">Office</h3>
-                        <p className="text-gray-600 mb-4">
+                        <h3 className="text-2xl font-semibold" id="office-heading">Office</h3>
+                        <p className="text-gray-600 mb-4" aria-describedby="office-heading">
                             Visit our office during business hours for in-person assistance.
                         </p>
                         <ProgressiveButton
                             href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
                             variant="default"
                             size="lg"
-                            className="text-md hover:text-black border border-transparent hover:border-black " 
+                            className="text-md hover:text-black border border-transparent hover:border-black"
                             style={{ backgroundColor: lighterColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={backgroundColor}
                             target="_blank"
+                            aria-label="Open office location in Google Maps"
                         >
                             Directions
                         </ProgressiveButton>
