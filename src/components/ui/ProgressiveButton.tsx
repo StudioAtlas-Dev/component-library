@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from './button';
 import { cn } from '@/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
+import type { LinkProps } from 'next/link';
 
 /**
  * A progressively enhanced button component that gracefully upgrades from a basic link to an
@@ -40,7 +41,7 @@ type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>
 export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow' | 'reveal-icon';
 
-interface ProgressiveButtonProps {
+interface ProgressiveButtonProps extends Omit<LinkProps, 'href'> {
   /** URL the button links to */
   href: string;
   /** Button content */
@@ -57,6 +58,10 @@ interface ProgressiveButtonProps {
   hoverEffect?: ButtonHoverEffect;
   /** Color for hover animation overlay */
   hoverColor?: string;
+  /** HTML target attribute */
+  target?: string;
+  /** HTML rel attribute - automatically set when target="_blank" */
+  rel?: string;
 }
 
 export function ProgressiveButton({
@@ -68,6 +73,9 @@ export function ProgressiveButton({
   children,
   hoverEffect = 'none',
   hoverColor = 'black',
+  target,
+  rel,
+  ...props
 }: ProgressiveButtonProps) {
   // Track hydration state for progressive enhancement
   const [hydrated, setHydrated] = React.useState(false);
@@ -77,6 +85,9 @@ export function ProgressiveButton({
     setHydrated(true);
   }, []);
 
+  // Set rel="noopener noreferrer" when target="_blank" for security
+  const linkRel = target === '_blank' ? 'noopener noreferrer' : rel;
+
   if (!hydrated) {
     // SSR/Initial Load: Render basic link with button styling
     return (
@@ -84,6 +95,9 @@ export function ProgressiveButton({
         href={href}
         className={cn(buttonVariants({ variant, size, hoverEffect }), className)}
         style={style}
+        target={target}
+        rel={linkRel}
+        {...props}
       >
         {children}
       </Link>
@@ -101,7 +115,12 @@ export function ProgressiveButton({
       hoverEffect={hoverEffect}
       hoverColor={hoverColor}
     >
-      <Link href={href}>
+      <Link 
+        href={href}
+        target={target}
+        rel={linkRel}
+        {...props}
+      >
         {children}
       </Link>
     </Button>

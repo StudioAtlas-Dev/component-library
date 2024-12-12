@@ -65,6 +65,7 @@ export default function ContactSectionComponent({
                             style={{ backgroundColor: popColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={lighterColor}
+                            target="_blank" 
                         >
                             {email}
                         </ProgressiveButton>
@@ -88,6 +89,7 @@ export default function ContactSectionComponent({
                                 style={{ backgroundColor: lighterColor }}
                                 hoverEffect={hoverEffect}
                                 hoverColor={backgroundColor}
+                                target="_blank"
                             >
                                 Start new chat
                             </ProgressiveButton>
@@ -111,6 +113,7 @@ export default function ContactSectionComponent({
                             style={{ backgroundColor: lighterColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={backgroundColor}
+                            target="_blank"
                         >
                             {phone}
                         </ProgressiveButton>
@@ -133,6 +136,7 @@ export default function ContactSectionComponent({
                             style={{ backgroundColor: lighterColor }}
                             hoverEffect={hoverEffect}
                             hoverColor={backgroundColor}
+                            target="_blank"
                         >
                             Directions
                         </ProgressiveButton>
