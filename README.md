@@ -66,6 +66,8 @@ Ensure your project has the necessary dependencies:
 }
 ```
 
+or just download the package.json file and run `npm install`
+
 ### 3. Import and Use
 Import the component and customize it using props:
 

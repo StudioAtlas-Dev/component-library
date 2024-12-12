@@ -38,7 +38,7 @@ import type { VariantProps } from 'class-variance-authority';
 
 type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
 type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>
-type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow';
+export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow' | 'reveal-icon';
 
 interface ProgressiveButtonProps {
   /** URL the button links to */
