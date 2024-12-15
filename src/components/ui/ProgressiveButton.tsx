@@ -52,7 +52,7 @@ interface ProgressiveButtonProps extends Omit<LinkProps, 'href'> {
   size?: ButtonSize;
   /** Additional CSS classes */
   className?: string;
-  /** Inline styles (use sparingly, prefer className) */
+  /** Inline styles (use sparingly, prefer className for all but background color) */
   style?: React.CSSProperties;
   /** Animation effect on hover (only active after hydration) */
   hoverEffect?: ButtonHoverEffect;

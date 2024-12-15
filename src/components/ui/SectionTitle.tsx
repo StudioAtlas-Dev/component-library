@@ -28,7 +28,7 @@ export default function SectionTitle({
   return (
     <div 
       className={cn(
-        'text-center md:text-center',
+        'text-center md:text-center px-4 pt-16 md:pt-24',
         alignLeft && 'lg:text-left',
         className
       )}
@@ -47,7 +47,7 @@ export default function SectionTitle({
       </h3>
       <h2 
         className={cn(
-          'text-4xl font-bold mb-4',
+          'md:text-5xl text-4xl font-bold mb-4',
           dark ? 'text-white' : 'text-gray-900',
           alignLeft && 'lg:mx-0',
           titleClassName
@@ -58,7 +58,7 @@ export default function SectionTitle({
       <p 
         className={cn(
           'max-w-2xl mx-auto font-normal',
-          dark ? 'text-[#E6E6E6]' : 'text-gray-600',
+          dark ? 'text-[#E6E6E6]' : 'text-gray-900',
           alignLeft && 'lg:mx-0',
           descriptionClassName
         )}
