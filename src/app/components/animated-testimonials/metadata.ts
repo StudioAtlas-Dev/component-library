@@ -3,5 +3,10 @@ export const metadata = {
   type: 'Section Component',
   description: 'A smooth scrolling testimonials section with animated cards',
   tags: ['layout', 'testimonials', 'animation'],
-  dateAdded: '2024-12-06'
+  dateAdded: '2024-12-06',
+  dependencies: [
+    "animejs",
+    "clsx",
+    "tailwind-merge"
+  ]
 }; 

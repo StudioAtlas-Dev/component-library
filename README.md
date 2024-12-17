@@ -36,7 +36,8 @@ export const metadata = {
   type: 'Section Component | Hero | Card | etc',
   description: 'Brief description of the component',
   tags: ['tag1', 'tag2', 'tag3'],
-  dateAdded: '2099-01-01' // ISO date string
+  dateAdded: '2099-01-01', // ISO date string
+  dependencies: ['dependency1', 'dependency2', 'dependency3'] // Dependencies required in addition to next.js, react, tailwindcss
 };
 ```
 

@@ -4,6 +4,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ComponentMeta } from '@/types/component';
 
+// Extend ComponentMeta to include dependencies
+interface ExtendedComponentMeta extends ComponentMeta {
+  dependencies?: string[];
+}
+
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ fill, priority, loading, ...props }: any) => {
@@ -47,7 +52,7 @@ describe('Component Library Tests', () => {
     describe(`Component: ${name}`, () => {
       let ComponentModule: ComponentModule | null = null;
       let Component: React.ComponentType<any> | null = null;
-      let metadata: ComponentMeta | null = null;
+      let metadata: ExtendedComponentMeta | null = null;
 
       beforeAll(async () => {
         try {
@@ -97,6 +102,14 @@ describe('Component Library Tests', () => {
               dateAdded: expect.any(String)
             })
           );
+
+          // If dependencies exist, ensure they are in correct format
+          if (metadata.dependencies) {
+            expect(Array.isArray(metadata.dependencies)).toBe(true);
+            metadata.dependencies.forEach((dep: string) => {
+              expect(typeof dep).toBe('string');
+            });
+          }
         }
       });
 
