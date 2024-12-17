@@ -39,16 +39,30 @@ function findFile(basePath) {
 
 function extractImports(content, componentDir, depth = 0) {
     const imports = new Set();
-    const importRegex = /import\s+(?:(?:[\w\s{},]*)\s+from\s+)?['"]([^'"]+)['"]/g;
+    // Track named imports and their usage
+    const namedImports = new Map();
+    
+    // Extract all imports and track named ones
+    const importRegex = /import\s+(?:(\w+)|{([^}]+)})?\s*(?:\s*,\s*[^,]+)?\s+from\s+['"]([^'"]+)['"]/g;
     let match;
 
     while ((match = importRegex.exec(content)) !== null) {
-        const importPath = match[1];
+        const [_, defaultImport, namedImportStr, importPath] = match;
         
         // Handle external dependencies
         if (!importPath.startsWith('@/') && !importPath.startsWith('.') && !IGNORED_DEPENDENCIES.has(importPath)) {
-            const packageName = importPath.split('/')[0];
-            imports.add(packageName);
+            // For external dependencies, check if they're actually used if we have named imports
+            if (namedImportStr) {
+                const importNames = namedImportStr.split(',').map(name => name.trim().split(' as ')[0]);
+                // Add to named imports map for usage checking
+                importNames.forEach(name => {
+                    namedImports.set(name, importPath);
+                });
+            } else {
+                // Default import or namespace import - assume it's used
+                const packageName = importPath.split('/')[0];
+                imports.add(packageName);
+            }
             continue;
         }
 
@@ -66,14 +80,54 @@ function extractImports(content, componentDir, depth = 0) {
                 try {
                     processedFiles.add(resolvedPath);
                     const localContent = readFileSync(resolvedPath, 'utf8');
-                    const nestedDeps = extractImports(localContent, resolvedPath, depth + 1);
-                    nestedDeps.forEach(dep => imports.add(dep));
+                    
+                    // If we have named imports, only process if they're used
+                    if (namedImportStr) {
+                        const importNames = namedImportStr.split(',').map(name => name.trim().split(' as ')[0]);
+                        const usedImports = importNames.filter(name => {
+                            // Create regex that matches the import name as a word boundary
+                            const nameRegex = new RegExp(`\\b${name}\\b`, 'g');
+                            // Count occurrences after the import statement
+                            const afterImport = content.slice(match.index + match[0].length);
+                            return nameRegex.test(afterImport);
+                        });
+                        
+                        if (usedImports.length > 0) {
+                            const nestedDeps = extractImports(localContent, resolvedPath, depth + 1);
+                            nestedDeps.forEach(dep => imports.add(dep));
+                        }
+                    } else if (defaultImport) {
+                        // For default imports, check if the imported component is used
+                        const nameRegex = new RegExp(`\\b${defaultImport}\\b`, 'g');
+                        const afterImport = content.slice(match.index + match[0].length);
+                        if (nameRegex.test(afterImport)) {
+                            // If the default import is used, include all its dependencies
+                            const nestedDeps = extractImports(localContent, resolvedPath, depth + 1);
+                            nestedDeps.forEach(dep => imports.add(dep));
+                        }
+                    } else {
+                        // Side-effect import - include all dependencies
+                        const nestedDeps = extractImports(localContent, resolvedPath, depth + 1);
+                        nestedDeps.forEach(dep => imports.add(dep));
+                    }
                 } catch (error) {
                     console.warn(`Could not process import: ${importPath} (${error.message})`);
                 }
             }
         }
     }
+
+    // Check usage of named imports from external packages
+    namedImports.forEach((packagePath, importName) => {
+        // Create regex that matches the import name as a word boundary
+        const nameRegex = new RegExp(`\\b${importName}\\b`, 'g');
+        // Count occurrences after all imports
+        const afterImports = content.replace(/import[\s\S]*?from\s+['"][^'"]+['"]/g, '');
+        if (nameRegex.test(afterImports)) {
+            const packageName = packagePath.split('/')[0];
+            imports.add(packageName);
+        }
+    });
 
     return Array.from(imports);
 }

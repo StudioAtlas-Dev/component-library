@@ -5,8 +5,8 @@ export const metadata = {
   tags: ["team", "layout", "light"],
   dateAdded: "2024-12-09",
   dependencies: [
-    "react-icons",
     "animejs",
+    "react-icons",
     "clsx",
     "tailwind-merge"
   ],

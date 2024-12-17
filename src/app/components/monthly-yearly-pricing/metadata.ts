@@ -7,9 +7,9 @@ export const metadata = {
     dependencies: [
     "clsx",
     "tailwind-merge",
-    "react-icons",
+    "animejs",
     "@radix-ui",
     "class-variance-authority",
-    "animejs"
+    "react-icons"
   ],
 }; 

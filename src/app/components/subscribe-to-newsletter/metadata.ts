@@ -6,10 +6,10 @@ export const metadata = {
   dateAdded: '2024-12-10',
   dependencies: [
     "animejs",
-    "@radix-ui",
-    "class-variance-authority",
     "clsx",
     "tailwind-merge",
+    "@radix-ui",
+    "class-variance-authority",
     "react-icons",
     "react-dom"
   ]

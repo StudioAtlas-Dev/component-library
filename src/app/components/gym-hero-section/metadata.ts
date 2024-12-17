@@ -5,11 +5,11 @@ export const metadata = {
   tags: ['layout', 'hero', 'light', 'fitness'],
   dateAdded: '2024-12-07',
   dependencies: [
-    "@radix-ui",
-    "class-variance-authority",
     "clsx",
     "tailwind-merge",
     "animejs",
+    "@radix-ui",
+    "class-variance-authority",
     "react-icons"
   ]
 }; 

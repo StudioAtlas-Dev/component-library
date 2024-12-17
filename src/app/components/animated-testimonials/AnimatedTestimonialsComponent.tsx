@@ -58,7 +58,7 @@ export default function AnimatedTestimonialsComponent({
           tagline="Testimonials"
           title="Built by developers, refined by experience"
           description="Our components are battle-tested in production by teams who value quality, performance, and developer experience."
-          popColor="#2563eb"
+          popColor={popColor}
           className="mb-12"
         />
 
