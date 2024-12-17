@@ -14,7 +14,7 @@ interface ClientPageProps {
 export default function ClientPage({ initialComponents, types }: ClientPageProps) {
   const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState('All');
-  const [sortBy, setSortBy] = useState<SortOption>('Name');
+  const [sortBy, setSortBy] = useState<SortOption>('Date Added');
   const [filteredComponents, setFilteredComponents] = useState(initialComponents);
 
   // Run filter on mount and whenever search/type/sort changes
