@@ -79,10 +79,11 @@ describe('Component Library Tests', () => {
             metadata = {
               name: name,
               type: 'Section Component',
-              description: 'Component description',
-              tags: ['test'],
+              description: 'A meta description for the component',
+              tags: ['fill in your metadata'],
               dateAdded: new Date().toISOString(),
-              path: name
+              path: name,
+              dependencies: ["run your dependency script"]
             };
           }
 
@@ -99,17 +100,16 @@ describe('Component Library Tests', () => {
               name: expect.any(String),
               type: expect.any(String),
               tags: expect.arrayContaining([expect.any(String)]),
-              dateAdded: expect.any(String)
+              dateAdded: expect.any(String),
+              dependencies: expect.any(Array)
             })
           );
 
-          // If dependencies exist, ensure they are in correct format
-          if (metadata.dependencies) {
-            expect(Array.isArray(metadata.dependencies)).toBe(true);
-            metadata.dependencies.forEach((dep: string) => {
-              expect(typeof dep).toBe('string');
-            });
-          }
+          // Validate dependencies array format
+          expect(Array.isArray(metadata.dependencies)).toBe(true);
+          metadata.dependencies?.forEach((dep: string) => {
+            expect(typeof dep).toBe('string');
+          });
         }
       });
 

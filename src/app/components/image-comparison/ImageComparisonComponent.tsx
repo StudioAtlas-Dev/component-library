@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import anime from 'animejs';
+import { cn } from '@/lib/utils';
 
+// Props for the image comparison component
 interface ImageComparisonProps {
     image1: string;
     image2: string;
@@ -33,18 +35,26 @@ export default function ImageComparisonComponent({
     showHandlebar = true,
     handlebarStyle = 'default'
 }: ImageComparisonProps) {
+    // Track slider position and interaction states
     const [sliderPosition, setSliderPosition] = useState(initPosition);
     const [isDragging, setIsDragging] = useState(false);
     const [mouseY, setMouseY] = useState<number | null>(null);
     
+    // Refs for DOM elements and animations
     const containerRef = useRef<HTMLDivElement>(null);
     const autoplayAnimationRef = useRef<anime.AnimeInstance | null>(null);
     const handlebarRef = useRef<HTMLDivElement>(null);
-    const lightAnimationRef = useRef<anime.AnimeInstance | null>(null);
 
+    // Compute cursor style based on interaction state
+    const getCursorStyle = useCallback(() => 
+        isDragging ? 'grabbing' : hover ? 'col-resize' : 'grab'
+    , [isDragging, hover]);
+
+    // Start autoplay animation sequence
     const startAutoplay = useCallback(() => {
         if (!autoplay || !containerRef.current) return;
 
+        // Create timeline for smooth transitions between positions
         const target = { value: initPosition };
         const tl = anime.timeline({
             loop: true,
@@ -55,6 +65,7 @@ export default function ImageComparisonComponent({
             }
         });
 
+        // Add animation sequence: init position -> right -> left -> init position
         tl.add({
             targets: target,
             value: 100,
@@ -75,6 +86,7 @@ export default function ImageComparisonComponent({
         tl.play();
     }, [autoplay, autoplayDuration, initPosition]);
 
+    // Initialize and cleanup autoplay animation
     useEffect(() => {
         if (autoplay) {
             startAutoplay();
@@ -86,6 +98,7 @@ export default function ImageComparisonComponent({
         };
     }, [autoplay, startAutoplay]);
 
+    // Animate slider to target position
     const animateSlider = useCallback((targetPosition: number) => {
         anime({
             targets: { value: sliderPosition },
@@ -99,6 +112,7 @@ export default function ImageComparisonComponent({
         });
     }, [sliderPosition]);
 
+    // Handle slider movement based on cursor position
     const handleMove = useCallback((clientX: number) => {
         if (!containerRef.current) return;
         
@@ -115,6 +129,7 @@ export default function ImageComparisonComponent({
         }
     }, [hover, isDragging, animateSlider]);
 
+    // Event handlers for mouse/touch interactions
     const handleMouseEnter = useCallback(() => {
         if (autoplay && autoplayAnimationRef.current) {
             autoplayAnimationRef.current.pause();
@@ -159,6 +174,7 @@ export default function ImageComparisonComponent({
         }
     }, [hover]);
 
+    // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
         const handlebar = handlebarRef.current;
         const target = e.target as HTMLElement;
@@ -182,6 +198,7 @@ export default function ImageComparisonComponent({
     }, [hover, autoplay, isDragging, handleMove]);
 
     return (
+        // Main container with event handlers
         <div 
             className="p-8 bg-gray-100/50 dark:bg-gray-800/20 rounded-[2rem]"
             onMouseMove={handleMouseMove}
@@ -195,13 +212,14 @@ export default function ImageComparisonComponent({
             role="region"
             aria-label="Image comparison slider"
         >
+            {/* Image container */}
             <div
                 ref={containerRef}
                 className="relative overflow-hidden rounded-xl"
                 style={{
-                    width: width,
-                    height: height,
-                    cursor: isDragging ? 'grabbing' : hover ? 'col-resize' : 'default'
+                    width,
+                    height,
+                    cursor: getCursorStyle()
                 }}
             >
                 {/* Second Image (Background) */}
@@ -211,7 +229,7 @@ export default function ImageComparisonComponent({
                         alt="After comparison"
                         fill
                         draggable={false}
-                        className={`object-cover pointer-events-none ${imageClassName}`}
+                        className={cn("object-cover pointer-events-none", imageClassName)}
                     />
                 </div>
 
@@ -227,22 +245,23 @@ export default function ImageComparisonComponent({
                         alt="Before comparison"
                         fill
                         draggable={false}
-                        className={`object-cover pointer-events-none ${imageClassName}`}
+                        className={cn("object-cover pointer-events-none", imageClassName)}
                     />
                 </div>
 
-                {/* Slider Line */}
+                {/* Slider Line with Handlebar */}
                 <div 
                     ref={handlebarRef}
-                    className={`absolute top-0 bottom-0 z-30 slider-handle ${
+                    className={cn(
+                        "absolute top-0 bottom-0 z-30 slider-handle",
                         handlebarStyle === 'glass' 
                             ? 'w-[2px] bg-white/10 backdrop-blur-sm' 
                             : 'w-0.5 bg-white shadow-lg'
-                    }`}
+                    )}
                     style={{
                         left: `${sliderPosition}%`,
                         transform: 'translateX(-50%)',
-                        cursor: hover ? 'col-resize' : 'grab'
+                        cursor: getCursorStyle()
                     }}
                     role="slider"
                     aria-label="Comparison slider"
@@ -250,95 +269,84 @@ export default function ImageComparisonComponent({
                     aria-valuemin={0}
                     aria-valuemax={100}
                 >
+                    {/* Default handlebar style */}
                     {showHandlebar && handlebarStyle === 'default' && (
                         <div 
                             className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center slider-handle"
-                            style={{
-                                cursor: hover ? 'col-resize' : isDragging ? 'grabbing' : 'grab'
-                            }}
+                            style={{ cursor: getCursorStyle() }}
                         >
                             <div className="w-4 h-4 border-r-2 border-l-2 border-gray-400" />
                         </div>
                     )}
+
+                    {/* Glass handlebar style with glow effect */}
                     {showHandlebar && handlebarStyle === 'glass' && (
                         <>
                             {/* Glass handle */}
                             <div 
                                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-8 rounded-full slider-handle"
                                 style={{
-                                    cursor: hover ? 'col-resize' : isDragging ? 'grabbing' : 'grab',
+                                    cursor: getCursorStyle(),
                                     background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 100%)',
                                     backdropFilter: 'blur(4px)',
                                     border: '1px solid rgba(255,255,255,0.2)',
                                     zIndex: 1
                                 }}
                             />
-                            {/* Enhanced glow effect that follows cursor */}
                             {mouseY !== null && (
                                 <>
-                                    {/* Outer glow */}
-                                    <div 
-                                        className="absolute left-1/2 pointer-events-none"
-                                        style={{
-                                            top: `${mouseY}%`,
+                                    {/* Glow effect layers */}
+                                    {[
+                                        {
                                             width: '20px',
                                             height: '480px',
-                                            transform: 'translate(-50%, -50%)',
-                                            background: `
-                                                radial-gradient(
-                                                    50% 50% at center,
-                                                    rgba(255,255,255,0.12) 0%,
-                                                    rgba(255,255,255,0.08) 40%,
-                                                    rgba(255,255,255,0.04) 70%,
-                                                    transparent 100%
-                                                )
-                                            `,
-                                            filter: 'blur(3px)',
+                                            gradient: '50% 50%',
+                                            colors: ['rgba(255,255,255,0.12)', 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.04)'],
+                                            stops: [0, 40, 70],
+                                            blur: '3px',
                                             opacity: 0.7
-                                        }}
-                                    />
-                                    {/* Middle glow */}
-                                    <div 
-                                        className="absolute left-1/2 pointer-events-none"
-                                        style={{
-                                            top: `${mouseY}%`,
+                                        },
+                                        {
                                             width: '14px',
                                             height: '400px',
-                                            transform: 'translate(-50%, -50%)',
-                                            background: `
-                                                radial-gradient(
-                                                    40% 40% at center,
-                                                    rgba(255,255,255,0.25) 0%,
-                                                    rgba(255,255,255,0.15) 50%,
-                                                    rgba(255,255,255,0.05) 80%,
-                                                    transparent 100%
-                                                )
-                                            `,
-                                            filter: 'blur(2px)',
+                                            gradient: '40% 40%',
+                                            colors: ['rgba(255,255,255,0.25)', 'rgba(255,255,255,0.15)', 'rgba(255,255,255,0.05)'],
+                                            stops: [0, 50, 80],
+                                            blur: '2px',
                                             opacity: 0.8
-                                        }}
-                                    />
-                                    {/* Core glow */}
-                                    <div 
-                                        className="absolute left-1/2 pointer-events-none"
-                                        style={{
-                                            top: `${mouseY}%`,
+                                        },
+                                        {
                                             width: '8px',
                                             height: '320px',
-                                            transform: 'translate(-50%, -50%)',
-                                            background: `
-                                                radial-gradient(
-                                                    30% 30% at center,
-                                                    rgba(255,255,255,1) 0%,
-                                                    rgba(255,255,255,0.7) 30%,
-                                                    rgba(255,255,255,0.3) 70%,
-                                                    transparent 100%
-                                                )
-                                            `,
-                                            filter: 'blur(0.5px)',
+                                            gradient: '30% 30%',
+                                            colors: ['rgba(255,255,255,1)', 'rgba(255,255,255,0.7)', 'rgba(255,255,255,0.3)'],
+                                            stops: [0, 30, 70],
+                                            blur: '0.5px',
                                             opacity: 1
-                                        }}
-                                    />
+                                        }
+                                    ].map((layer, index) => (
+                                        <div 
+                                            key={index}
+                                            className="absolute left-1/2 pointer-events-none"
+                                            style={{
+                                                top: `${mouseY}%`,
+                                                width: layer.width,
+                                                height: layer.height,
+                                                transform: 'translate(-50%, -50%)',
+                                                background: `
+                                                    radial-gradient(
+                                                        ${layer.gradient} at center,
+                                                        ${layer.colors[0]} ${layer.stops[0]}%,
+                                                        ${layer.colors[1]} ${layer.stops[1]}%,
+                                                        ${layer.colors[2]} ${layer.stops[2]}%,
+                                                        transparent 100%
+                                                    )
+                                                `,
+                                                filter: `blur(${layer.blur})`,
+                                                opacity: layer.opacity
+                                            }}
+                                        />
+                                    ))}
                                 </>
                             )}
                         </>
