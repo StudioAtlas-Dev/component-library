@@ -44,23 +44,23 @@ export function SvgTraceBackgroundComponent({
         const currentTop = contentRef.current.offsetTop;
         const height = targetTop - currentTop + targetSectionRef.current.offsetHeight;
         setSvgHeight(height);
-        console.log('SVG Height set to target section:', height);
+        //console.log('SVG Height set to target section:', height);
       } else {
         // Otherwise use the content height as before
         const height = contentRef.current.offsetHeight;
         setSvgHeight(height);
-        console.log('SVG Height set to content:', height);
+        //console.log('SVG Height set to content:', height);
       }
     }
   }, [targetSectionRef]);
 
   useEffect(() => {
     if (!pathRef.current || !svgHeight) {
-      console.log('No path ref available or no height');
+      //console.log('No path ref available or no height');
       return;
     }
 
-    console.log('Setting up animation...');
+    //console.log('Setting up animation...');
     
     // Calculate actual path with real height values
     const actualPath = path
@@ -73,7 +73,7 @@ export function SvgTraceBackgroundComponent({
     
     // Get the total length of the path for the animation
     const pathLength = pathRef.current.getTotalLength();
-    console.log('Path length:', pathLength);
+    //console.log('Path length:', pathLength);
 
     // Set up initial state - fully hidden
     pathRef.current.style.strokeDasharray = `${pathLength}`;
