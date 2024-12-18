@@ -5,6 +5,8 @@ export const metadata = {
     tags: ['image', 'comparison', 'animated'],
     dateAdded: '2024-12-17',
     dependencies: [
-    "animejs"
+    "animejs",
+    "clsx",
+    "tailwind-merge"
   ],
 }; 
