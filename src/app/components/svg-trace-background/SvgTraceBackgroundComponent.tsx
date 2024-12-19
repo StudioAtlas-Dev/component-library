@@ -11,7 +11,7 @@ interface SvgTraceBackgroundProps {
   colors?: string[];
   /** Class name for additional styling */
   className?: string;
-  /** Reference to the element where the animation should complete */
+  /** Reference to the element where the animation should complete, referenced via ref={targetRef} */
   targetSectionRef?: React.RefObject<HTMLElement>;
   /** Background color for the component */
   backgroundColor?: string;
@@ -22,11 +22,9 @@ interface SvgTraceBackgroundProps {
 
 export function SvgTraceBackgroundComponent({
   path = 'M 1 0 L 1 -36 L 19 -12 L 19 HEIGHT_80 L 1 HEIGHT_80_PLUS L 1 HEIGHT',
-    colors = ['#D4BEE4', '#9B7EBD', '#6344F5'],
+  colors = ['#D4BEE4', '#9B7EBD', '#6344F5'],
   className,
   targetSectionRef,
-  backgroundColor,
-  popColor,
   children
 }: SvgTraceBackgroundProps) {
   const ref = useRef<HTMLDivElement>(null);
