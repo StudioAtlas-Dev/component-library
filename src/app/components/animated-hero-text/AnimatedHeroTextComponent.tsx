@@ -8,48 +8,40 @@ interface AnimatedHeroTextProps {
   words: string[];
   duration?: number;
   className?: string;
-  animationType?: 'blur-away' | 'falling-letters';
+  animationType?: 'blur-away' | 'falling-letters' | 'typing';
+  wordLifespan?: number;
 }
 
 export default function AnimatedHeroTextComponent({
   words,
   duration = 2000,
   className,
-  animationType = 'blur-away'
+  animationType = 'blur-away',
+  wordLifespan = 1000,
 }: AnimatedHeroTextProps) {
   const [currentWord, setCurrentWord] = useState(words[0]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const nextWordRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const [containerWidth, setContainerWidth] = useState(0);
+  const textRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const blinkRef = useRef<anime.AnimeInstance | null>(null);
 
-  useEffect(() => {
-    setIsClient(true);
-    // Calculate the maximum width needed for any word
-    if (containerRef.current) {
-      const tempDiv = document.createElement('div');
-      tempDiv.style.visibility = 'hidden';
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.whiteSpace = 'nowrap';
-      document.body.appendChild(tempDiv);
-
-      const maxWidth = Math.max(...words.map(word => {
-        tempDiv.textContent = word;
-        return tempDiv.offsetWidth;
-      }));
-
-      document.body.removeChild(tempDiv);
-      setContainerWidth(maxWidth);
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [words]);
+  // Helper function to calculate text width (with null safety)
+  const calculateTextWidth = (element: HTMLElement | null, text: string): number => {
+    if (!element) return 0;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.style.visibility = 'hidden';
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.whiteSpace = 'nowrap';
+    tempDiv.style.font = window.getComputedStyle(element).font;
+    tempDiv.textContent = text;
+    document.body.appendChild(tempDiv);
+    const width = tempDiv.offsetWidth;
+    document.body.removeChild(tempDiv);
+    return width;
+  };
 
   const createLetterSpans = (word: string) => {
     return word.split('').map((letter, i) => (
@@ -57,117 +49,210 @@ export default function AnimatedHeroTextComponent({
     ));
   };
 
+  // Refactored animateTyping function
+  const animateTyping = useCallback((nextWord: string) => {
+    if (!textRef.current || !containerRef.current) return;
+
+    const currentWidth = calculateTextWidth(textRef.current, currentWord);
+    const nextWidth = calculateTextWidth(textRef.current, nextWord);
+
+    // Initialize text content if not set
+    if (!textRef.current.textContent) {
+      textRef.current.textContent = currentWord;
+    }
+
+    const timeline = anime.timeline({
+      easing: 'easeInOutSine',
+      complete: () => {
+        setCurrentWord(nextWord);
+        setIsAnimating(false);
+      }
+    });
+
+    // Text animation
+    timeline
+      .add({
+        targets: textRef.current,
+        width: [currentWidth, 0],
+        duration: duration / 2,
+        easing: 'steps(30)',
+        begin: () => {
+          if (textRef.current) {
+            textRef.current.textContent = currentWord;
+          }
+        }
+      })
+      .add({
+        targets: textRef.current,
+        width: [0, nextWidth],
+        duration: duration / 2,
+        easing: 'steps(30)',
+        begin: () => {
+          if (textRef.current) {
+            textRef.current.textContent = nextWord;
+          }
+        }
+      });
+
+    // Cursor animation
+    if (cursorRef.current) {
+      timeline
+        .add({
+          targets: cursorRef.current,
+          translateX: [currentWidth, 0],
+          duration: duration / 2,
+          easing: 'steps(30)'
+        }, 0)
+        .add({
+          targets: cursorRef.current,
+          translateX: [0, nextWidth],
+          duration: duration / 2,
+          easing: 'steps(30)'
+        }, duration / 2);
+    }
+  }, [currentWord, duration]);
+
+  const animateFallingLetters = useCallback((nextWord: string) => {
+    if (!textRef.current) return;
+
+    // Set up next word with letter spans
+    textRef.current.innerHTML = '';
+    const letterElements = createLetterSpans(nextWord);
+    letterElements.forEach(letterElement => {
+      const spanNode = document.createElement('span');
+      spanNode.className = 'inline-block whitespace-nowrap';
+      spanNode.textContent = letterElement.props.children;
+      textRef.current?.appendChild(spanNode);
+    });
+
+    const timeline = anime.timeline({
+      easing: 'easeInOutSine',
+      complete: () => {
+        setCurrentWord(nextWord);
+        setIsAnimating(false);
+      }
+    });
+
+    timeline
+      .add({
+        targets: textRef.current.children,
+        opacity: [0, 1],
+        translateY: [-50, 0],
+        duration: duration * 0.75,
+        delay: anime.stagger(100, { from: 'center' }),
+        easing: 'easeOutBounce'
+      });
+  }, [duration]);
+
+  const animateBlurAway = useCallback((nextWord: string) => {
+    if (!textRef.current) return;
+
+    const timeline = anime.timeline({
+      easing: 'easeInOutSine',
+      complete: () => {
+        setCurrentWord(nextWord);
+        setIsAnimating(false);
+      }
+    });
+
+    timeline
+      .add({
+        targets: textRef.current,
+        opacity: [1, 0],
+        translateY: [0, -40],
+        translateX: [0, 40],
+        scale: [1, 2],
+        filter: ['blur(0px)', 'blur(8px)'],
+        duration: duration * 0.75,
+        complete: () => {
+          if (textRef.current) {
+            textRef.current.textContent = nextWord;
+            textRef.current.style.opacity = '0';
+            textRef.current.style.filter = 'blur(0px)';
+            textRef.current.style.transform = 'none';
+          }
+        }
+      })
+      .add({
+        targets: textRef.current,
+        opacity: [0, 1],
+        duration: duration * 0.25,
+      });
+  }, [duration]);
+
+  // Main animation trigger (simplified)
   const animateTransition = useCallback(() => {
-    if (!containerRef.current || !nextWordRef.current || isAnimating) return;
+    if (!containerRef.current || !textRef.current || isAnimating) return;
 
     setIsAnimating(true);
     const nextWord = words[words.indexOf(currentWord) + 1] || words[0];
-    
-    if (animationType === 'falling-letters') {
-      // Set up next word with letter spans
-      nextWordRef.current.innerHTML = '';
-      const letterElements = createLetterSpans(nextWord);
-      letterElements.forEach(letterElement => {
-        const spanNode = document.createElement('span');
-        spanNode.className = 'inline-block whitespace-nowrap';
-        spanNode.textContent = letterElement.props.children;
-        nextWordRef.current?.appendChild(spanNode);
-      });
 
-      const timeline = anime.timeline({
-        easing: 'easeInOutSine',
-        complete: () => {
-          setCurrentWord(nextWord);
-          setIsAnimating(false);
-        }
-      });
-
-      const currentElement = containerRef.current?.firstElementChild;
-      if (currentElement?.children) {
-        timeline
-          .add({
-            targets: currentElement.children,
-            opacity: [1, 0],
-            duration: 200,
-            easing: 'easeInQuad'
-          })
-          .add({
-            targets: nextWordRef.current.children,
-            opacity: [0, 1],
-            translateY: [-50, 0],
-            duration: 750,
-            delay: anime.stagger(100),
-            easing: 'easeOutBounce'
-          }, '-=100');
-      }
-    } else {
-      nextWordRef.current.textContent = nextWord;
-      nextWordRef.current.style.opacity = '0';
-      nextWordRef.current.style.filter = 'blur(8px)';
-
-      const timeline = anime.timeline({
-        easing: 'easeInOutSine',
-        complete: () => {
-          setCurrentWord(nextWord);
-          setIsAnimating(false);
-        }
-      });
-
-      timeline
-        .add({
-          targets: containerRef.current.firstElementChild,
-          opacity: [1, 0],
-          translateY: [0, -40],
-          translateX: [0, 40],
-          scale: [1, 2],
-          filter: ['blur(0px)', 'blur(8px)'],
-          duration: 600
-        })
-        .add({
-          targets: nextWordRef.current,
-          opacity: [0, 1],
-          filter: ['blur(8px)', 'blur(0px)'],
-          duration: 400
-        }, '-=200');
+    switch (animationType) {
+      case 'typing':
+        animateTyping(nextWord);
+        break;
+      case 'falling-letters':
+        animateFallingLetters(nextWord);
+        break;
+      case 'blur-away':
+        animateBlurAway(nextWord);
+        break;
+      default:
+        break;
     }
-  }, [currentWord, words, isAnimating, animationType]);
+  }, [animationType, animateTyping, animateFallingLetters, animateBlurAway, currentWord, words, isAnimating]);
+
+  // Replace the cursor animation useEffect with CSS-based animation
+  const cursorStyle = {
+    width: '1px',
+    left: 0,
+    animation: 'blink 1s step-end infinite'
+  };
 
   useEffect(() => {
-    if (!isAnimating && isClient) {
-      timeoutRef.current = setTimeout(animateTransition, duration);
+    if (!isAnimating && words.length > 1) {
+      const timer = setTimeout(() => {
+        animateTransition();
+      }, wordLifespan + duration);
+
+      return () => clearTimeout(timer);
     }
-  }, [isAnimating, duration, animateTransition, isClient]);
+  }, [isAnimating, words, wordLifespan, duration, animateTransition]);
 
-  if (!isClient) {
-    return (
-      <span className={twMerge(
-        "inline-block text-neutral-900 dark:text-neutral-100 px-2",
-        className
-      )}>
-        {words[0]}
-      </span>
-    );
-  }
-
-  const containerStyle = {
-    width: containerWidth ? `${containerWidth}px` : 'auto',
-    minWidth: 'min-content'
-  };
+  // Initialize text content on mount
+  useEffect(() => {
+    if (textRef.current && !textRef.current.textContent) {
+      textRef.current.textContent = currentWord;
+    }
+  }, [currentWord]);
 
   return (
     <div className={twMerge(
-      "inline-block relative text-left text-neutral-900 dark:text-neutral-100 px-2",
+      "inline-block relative text-neutral-900 dark:text-neutral-100 px-2",
       className
-    )} style={containerStyle}>
-      <div ref={containerRef} className="relative whitespace-nowrap">
-        <div className="inline-block opacity-100 whitespace-nowrap">
-          {animationType === 'falling-letters' ? createLetterSpans(currentWord) : currentWord}
+    )}>
+      <style jsx>{`
+        @keyframes blink {
+          from, to { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
+      <div ref={containerRef} className="relative inline-flex items-center">
+        <div
+          ref={textRef}
+          className="inline-block whitespace-nowrap overflow-hidden"
+        >
+          {currentWord}
         </div>
-        <div 
-          ref={nextWordRef}
-          className="absolute top-0 left-0 inline-block whitespace-nowrap"
-        />
+        {animationType === 'typing' && (
+          <span
+            ref={cursorRef}
+            className="absolute top-0 h-full border border-neutral-500 bg-transparent dark:border-neutral-100"
+            style={cursorStyle}
+            aria-hidden="true"
+          />
+        )}
       </div>
     </div>
   );
-} 
+}

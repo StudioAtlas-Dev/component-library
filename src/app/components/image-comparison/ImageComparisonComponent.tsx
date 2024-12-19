@@ -44,6 +44,7 @@ export default function ImageComparisonComponent({
     const containerRef = useRef<HTMLDivElement>(null);
     const autoplayAnimationRef = useRef<anime.AnimeInstance | null>(null);
     const handlebarRef = useRef<HTMLDivElement>(null);
+    const isInitializedRef = useRef(false);
 
     // Compute cursor style based on interaction state
     const getCursorStyle = useCallback(() => 
@@ -98,13 +99,13 @@ export default function ImageComparisonComponent({
         };
     }, [autoplay, startAutoplay]);
 
-    // Animate slider to target position
+    // Animate slider to target position with improved easing
     const animateSlider = useCallback((targetPosition: number) => {
         anime({
             targets: { value: sliderPosition },
             value: targetPosition,
-            duration: 150,
-            easing: 'easeOutQuad',
+            duration: 300,
+            easing: 'easeOutCubic',
             update: (anim) => {
                 const value = anim.animations[0].currentValue;
                 setSliderPosition(typeof value === 'number' ? value : parseFloat(value));
@@ -112,9 +113,17 @@ export default function ImageComparisonComponent({
         });
     }, [sliderPosition]);
 
-    // Handle slider movement based on cursor position
+    // Initialize slider position only once on mount
+    useEffect(() => {
+        if (!containerRef.current || isInitializedRef.current) return;
+        
+        isInitializedRef.current = true;
+        setSliderPosition(initPosition);
+    }, [initPosition]);
+
+    // Handle slider movement based on cursor position with improved smoothing
     const handleMove = useCallback((clientX: number) => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !isInitializedRef.current) return;
         
         if ((hover && slideMode === 'hover') || (!hover && isDragging)) {
             const rect = containerRef.current.getBoundingClientRect();
@@ -127,7 +136,7 @@ export default function ImageComparisonComponent({
                 setSliderPosition(percent);
             }
         }
-    }, [hover, isDragging, animateSlider]);
+    }, [hover, isDragging, slideMode, animateSlider]);
 
     // Event handlers for mouse/touch interactions
     const handleMouseEnter = useCallback(() => {

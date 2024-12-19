@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState, useCallback } from 'react';
 import anime from 'animejs';
 
 interface LightrayBackgroundProps {
@@ -25,43 +25,44 @@ export default function LightrayBackgroundComponent({
         setHydrated(true);
     }, []);
 
-    // Separate initialization function
-    const initializeRays = () => {
+    const initializeRays = useCallback(() => {
         if (!containerRef.current || !hydrated) return;
 
-        const rayCount = window.innerWidth < 768 ? 6 : 8; // Fewer rays on mobile
+        // Clean up existing animations
+        if (timelineRef.current) {
+            timelineRef.current.pause();
+            timelineRef.current = null;
+        }
+
+        const rayCount = window.innerWidth < 768 ? 6 : 8;
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const aspectRatio = viewportWidth / viewportHeight;
 
         // Base width as percentage of viewport width
-        const baseWidthVw = aspectRatio < 1 ? 15 : 8; // Wider rays on mobile
-        const angle = aspectRatio < 1 ? 25 : 15; // Steeper angle on mobile
-        
-        // Each ray needs its width plus movement space
-        const spacing = 100 / (rayCount - 1); // Distribute across 100% with proper gaps
-        
+        const baseWidthVw = aspectRatio < 1 ? 15 : 8;
+        const angle = aspectRatio < 1 ? 25 : 15;
+        const spacing = 100 / (rayCount - 1);
+
         // Clear existing rays
         raysRef.current = [];
         containerRef.current.innerHTML = '';
 
         // Create rays with varied positions and widths
         const fragment = document.createDocumentFragment();
-
-        // Pre-calculate ray positions to ensure no overlap
         const positions = Array.from({ length: rayCount }, (_, i) => {
-            const basePosition = spacing * i; // Evenly space rays
-            const maxOffset = spacing * 0.15; // Small random offset for natural look
+            const basePosition = spacing * i;
+            const maxOffset = spacing * 0.15;
             return basePosition + (Math.random() - 0.5) * maxOffset;
-        }).sort((a, b) => a - b); // Sort to maintain left-to-right order
+        }).sort((a, b) => a - b);
 
         positions.forEach((position, i) => {
             const ray = document.createElement('div');
-            const rayWidthVw = baseWidthVw * (1 + Math.random()); // Width in vw units
-            const blurAmount = rayWidthVw * 0.15; // Blur relative to width
+            const rayWidthVw = baseWidthVw * (1 + Math.random());
+            const blurAmount = rayWidthVw * 0.15;
             const heightPercent = aspectRatio < 1 ? 
-                180 + Math.random() * 80 : // Taller on mobile
-                140 + Math.random() * 80;  // Standard height on desktop
+                180 + Math.random() * 80 :
+                140 + Math.random() * 80;
             
             ray.style.cssText = `
                 position: absolute;
@@ -98,19 +99,25 @@ export default function LightrayBackgroundComponent({
 
         containerRef.current.appendChild(fragment);
 
-        // Initial height animation
-        anime({
+        // Initial height animation with proper cleanup
+        const heightAnimation = anime({
             targets: raysRef.current,
             height: (el: HTMLElement) => el.style.getPropertyValue('--final-height'),
             duration: 4000,
             easing: 'easeOutExpo'
         });
 
-        // Movement animation
+        // Movement animation with improved timing
         timelineRef.current = anime.timeline({
             loop: true,
             direction: 'alternate',
-            easing: 'easeInOutSine'
+            easing: 'easeInOutSine',
+            update: (anim) => {
+                if (anim.progress > 98) {
+                    anim.pause();
+                    setTimeout(() => anim.play(), 500);
+                }
+            }
         });
 
         // Calculate safe movement ranges based on spacing
@@ -131,28 +138,19 @@ export default function LightrayBackgroundComponent({
                 delay: index * 100,
             }, 0);
         });
-    };
+    }, [hydrated, showRadialGradient]);
 
     useEffect(() => {
-        // Initial setup
         initializeRays();
 
-        // Handle resize with debounce
         const handleResize = () => {
-            // Clear existing timeout
             if (resizeTimeoutRef.current) {
                 clearTimeout(resizeTimeoutRef.current);
             }
 
-            // Set new timeout
             resizeTimeoutRef.current = setTimeout(() => {
-                // Clean up existing animations
-                if (timelineRef.current) {
-                    timelineRef.current.pause();
-                }
-                // Reinitialize rays
                 initializeRays();
-            }, 250); // Debounce time
+            }, 250);
         };
 
         window.addEventListener('resize', handleResize);
@@ -164,13 +162,14 @@ export default function LightrayBackgroundComponent({
             }
             if (timelineRef.current) {
                 timelineRef.current.pause();
+                timelineRef.current = null;
             }
             if (containerRef.current) {
                 containerRef.current.innerHTML = '';
             }
             raysRef.current = [];
         };
-    }, [hydrated, showRadialGradient]);
+    }, [hydrated, showRadialGradient, initializeRays]);
 
     const baseClasses = "relative flex flex-col h-full items-center justify-center bg-gray-900";
 
