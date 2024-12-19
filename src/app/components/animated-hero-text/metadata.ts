@@ -5,5 +5,7 @@ export const metadata = {
     tags: ['text', 'hero', 'animated'],
     dateAdded: '2024-12-18',
     dependencies: [
-    ],
+    "animejs",
+    "tailwind-merge"
+  ],
 }; 
