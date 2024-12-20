@@ -23,6 +23,34 @@ export const animateFallingLetters = ({
 }: FallingLettersAnimationParams) => {
   if (!textRef.current) return;
 
+  // If currentWord equals nextWord, this is an entrance animation
+  if (currentWord === nextWord) {
+    // Set up the initial word with spans
+    textRef.current.textContent = '';
+    currentWord.split('').forEach(letter => {
+      const span = document.createElement('span');
+      span.className = 'inline-block whitespace-nowrap';
+      span.style.opacity = '0';
+      span.style.transform = 'translateY(-20px)';
+      span.textContent = letter;
+      textRef.current?.appendChild(span);
+    });
+
+    // Animate the letters falling in
+    anime({
+      targets: textRef.current.children,
+      translateY: ['-20px', 0],
+      opacity: [0, 1],
+      duration: duration,
+      delay: anime.stagger(50, { from: 'center' }),
+      easing: 'easeOutQuad',
+      complete: () => {
+        onComplete?.();
+      }
+    });
+    return;
+  }
+
   // If we have a text node instead of spans, convert it to spans first
   if (textRef.current.childNodes.length === 1 && textRef.current.childNodes[0].nodeType === Node.TEXT_NODE) {
     const text = textRef.current.textContent || '';

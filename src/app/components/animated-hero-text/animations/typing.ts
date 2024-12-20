@@ -52,7 +52,7 @@ function animateTyping({
     easing: 'easeInOutSine',
     begin: () => {
       if (cursorRef.current) {
-        cursorRef.current.style.animation = 'blink 1s step-end infinite';
+        cursorRef.current.style.animation = 'blink 0.75s step-end infinite';
       }
       onBegin?.();
     },

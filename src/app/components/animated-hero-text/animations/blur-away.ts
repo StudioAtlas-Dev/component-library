@@ -24,6 +24,15 @@ export const animateBlurAway = ({
     }
   });
 
+  if (currentWord === nextWord) {
+    timeline.add({
+      targets: textRef.current,
+      opacity: [0, 1],
+      duration: duration,
+    });
+    return;
+  }
+
   timeline
     .add({
       targets: textRef.current,

@@ -62,27 +62,51 @@ export default function AnimatedHeroTextComponent({
         });
         break;
       case 'falling-letters':
-        animateFallingLetters({
-          textRef,
-          currentWord,
-          nextWord,
-          duration,
-          onComplete
-        });
-        break;
       case 'blur-away':
-        animateBlurAway({
-          textRef,
-          currentWord,
-          nextWord,
-          duration,
-          onComplete
-        });
+        if (!hasStartedFirstAnimation) {
+          setHasStartedFirstAnimation(true);
+          // Call the same animation function but with currentWord as both params
+          if (animationType === 'falling-letters') {
+            animateFallingLetters({
+              textRef,
+              currentWord,
+              nextWord: currentWord, // Same word for entrance
+              duration: duration * 0.5,
+              onComplete
+            });
+          } else {
+            animateBlurAway({
+              textRef,
+              currentWord,
+              nextWord: currentWord, // Same word for entrance
+              duration: duration * 0.5,
+              onComplete
+            });
+          }
+        } else {
+          if (animationType === 'falling-letters') {
+            animateFallingLetters({
+              textRef,
+              currentWord,
+              nextWord,
+              duration,
+              onComplete
+            });
+          } else {
+            animateBlurAway({
+              textRef,
+              currentWord,
+              nextWord,
+              duration,
+              onComplete
+            });
+          }
+        }
         break;
       default:
         break;
     }
-  }, [animationType, currentWord, duration, words, isAnimating]);
+  }, [animationType, currentWord, duration, words, isAnimating, hasStartedFirstAnimation]);
 
   // Initialize text content on mount
   useEffect(() => {
@@ -95,11 +119,11 @@ export default function AnimatedHeroTextComponent({
     if (!isAnimating && words.length > 1) {
       const timer = setTimeout(() => {
         animateTransition();
-      }, wordLifespan + duration);
+      }, hasStartedFirstAnimation ? wordLifespan : 0);
 
       return () => clearTimeout(timer);
     }
-  }, [isAnimating, words, wordLifespan, duration, animateTransition]);
+  }, [isAnimating, words, wordLifespan, duration, animateTransition, hasStartedFirstAnimation]);
 
   return (
     <div className={twMerge(
