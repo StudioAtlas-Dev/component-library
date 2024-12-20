@@ -5,12 +5,13 @@ import { twMerge } from 'tailwind-merge';
 import { animateTyping, calculateTextWidth } from './animations/typing';
 import { animateBlurAway } from './animations/blur-away';
 import { animateFallingLetters } from './animations/falling-letters';
+import { animateScrolling } from './animations/scrolling';
 
-interface AnimatedHeroTextProps {
+export interface AnimatedHeroTextProps {
   words: string[];
   duration?: number;
   className?: string;
-  animationType?: 'blur-away' | 'falling-letters' | 'typing';
+  animationType?: 'blur-away' | 'falling-letters' | 'typing' | 'scrolling';
   wordLifespan?: number;
 }
 
@@ -58,6 +59,18 @@ export default function AnimatedHeroTextComponent({
           nextWord,
           duration,
           onBegin: () => setHasStartedFirstAnimation(true),
+          onComplete
+        });
+        break;
+      case 'scrolling':
+        if (!hasStartedFirstAnimation) {
+          setHasStartedFirstAnimation(true);
+        }
+        animateScrolling({
+          textRef,
+          currentWord,
+          nextWord,
+          duration,
           onComplete
         });
         break;
