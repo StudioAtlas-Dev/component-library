@@ -2,6 +2,7 @@
   "name": "component-library",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +11,8 @@
     "test": "jest --no-cache",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "update-deps": "node scripts/updateDependencies.mjs"
+    "update-deps": "node scripts/updateDependencies.mjs",
+    "generate-previews": "node --loader ts-node/esm src/scripts/generate-previews.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
@@ -41,6 +43,7 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "puppeteer": "^22.4.1"
   }
 }
