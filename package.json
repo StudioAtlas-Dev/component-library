@@ -11,7 +11,7 @@
     "test": "jest --no-cache",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "update-deps": "node scripts/updateDependencies.mjs",
+    "update-deps": "node src/scripts/updateDependencies.mjs",
     "generate-previews": "node --loader ts-node/esm src/scripts/generate-previews.ts"
   },
   "dependencies": {
