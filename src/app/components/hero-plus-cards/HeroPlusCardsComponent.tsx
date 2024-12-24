@@ -1,15 +1,8 @@
-import { IconType } from 'react-icons';
-import { ServiceCard } from '@/components/ui/ServiceCard';
+import { ServiceCardData } from '@/components/ui/ServiceCard/types';
+import { CardGrid } from '@/components/ui/ServiceCard/CardGrid';
 import SectionTitle from '@/components/ui/SectionTitle';
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
-
-interface ServiceCardData {
-  icon: IconType;
-  title: string;
-  description: string;
-}
 
 interface HeroPlusCardsProps {
   tagline?: string;
@@ -29,14 +22,8 @@ export default function HeroPlusCardsComponent({
   buttonHref = '#',
   heroImage = '/images/design-hero.jpg',
   cards,
-  backgroundColor = '#ffffff',
   popColor = '#007acc'
 }: HeroPlusCardsProps) {
-  // Validate cards length
-  if (cards.length < 2 || cards.length > 8) {
-    throw new Error('Cards array must contain between 2 and 8 items');
-  }
-
   return (
     <section 
       className="w-full min-h-screen relative overflow-hidden"
@@ -96,35 +83,13 @@ export default function HeroPlusCardsComponent({
       </div>
 
       {/* Cards Section */}
-      <div 
-        className="w-full bg-white dark:bg-neutral-900"
-        role="region"
-        aria-label="Services"
-      >
-        <div className="max-w-9xl mx-auto">
-          <div 
-            className={cn(
-              "grid grid-cols-1 sm:grid-cols-2",
-              cards.length <= 4 
-                ? `lg:grid-cols-${cards.length}` 
-                : "lg:grid-cols-4"
-            )}
-          >
-            {cards.map((card, index) => (
-              <ServiceCard
-                key={index}
-                icon={card.icon}
-                title={card.title}
-                description={card.description}
-                className="bg-white dark:bg-neutral-900"
-                popColor={popColor}
-                iconAnimation="icon-360"
-                cardAnimation="thicken-border"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      <CardGrid
+        cards={cards}
+        popColor={popColor}
+        iconAnimation="icon-360"
+        cardAnimation="thicken-border"
+        variant="grid"
+      />
     </section>
   );
 }

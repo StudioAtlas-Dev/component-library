@@ -13,6 +13,7 @@ interface ClientServiceCardProps {
   iconComponent: React.ReactNode;
   iconAnimation?: string;
   cardAnimation?: string;
+  variant?: 'grid' | 'list' | 'compact';
 }
 
 function ClientServiceCard({
@@ -21,7 +22,8 @@ function ClientServiceCard({
   className,
   iconComponent,
   iconAnimation = 'none',
-  cardAnimation = 'none'
+  cardAnimation = 'none',
+  variant = 'grid'
 }: ClientServiceCardProps) {
   const iconRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -109,12 +111,14 @@ function ClientServiceCard({
     };
   }, [iconAnimation, cardAnimation]);
 
+  const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
+
   return (
     <div className="relative h-full" role="article">
       <div 
         ref={cardRef}
         className={className}
-        aria-labelledby={`card-title-${title.toLowerCase().replace(/\s+/g, '-')}`}
+        aria-labelledby={cardId}
       >
         <div 
           ref={iconRef}
@@ -124,7 +128,7 @@ function ClientServiceCard({
           {iconComponent}
         </div>
         <h3 
-          id={`card-title-${title.toLowerCase().replace(/\s+/g, '-')}`}
+          id={cardId}
           className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-3"
         >
           {title}

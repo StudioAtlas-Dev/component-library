@@ -1,16 +1,7 @@
 import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import dynamic from 'next/dynamic';
-
-interface ServiceCardProps {
-  icon: IconType;
-  title: string;
-  description: string;
-  className?: string;
-  popColor?: string;
-  iconAnimation?: string;
-  cardAnimation?: string;
-}
+import { ServiceCardProps, cardVariants } from './types';
 
 // Pre-render the icon on the server
 function IconWrapper({ icon: Icon, color }: { icon: IconType; color?: string }) {
@@ -22,17 +13,14 @@ function IconWrapper({ icon: Icon, color }: { icon: IconType; color?: string }) 
   );
 }
 
-// Base styles that will be used by both server and client components
-const baseCardStyles = "relative flex flex-col h-full px-6 sm:px-8 xl:px-12 py-8 border border-neutral-200 dark:border-neutral-800 service-card";
-
 // Create a server-rendered version of the card that matches client exactly
-function BaseCard({ icon: Icon, title, description, className, popColor }: ServiceCardProps) {
+function BaseCard({ icon: Icon, title, description, className, popColor, variant = 'grid' }: ServiceCardProps) {
   const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
   return (
     <div className="relative h-full" role="article">
       <div 
-        className={twMerge(baseCardStyles, className)}
+        className={twMerge(cardVariants[variant], className)}
         aria-labelledby={cardId}
       >
         <div className="w-8 h-8 mb-4" aria-hidden="true">
@@ -73,7 +61,7 @@ const ClientServiceCard = dynamic(
 let defaultProps: ServiceCardProps;
 
 export function ServiceCard(props: ServiceCardProps) {
-  const { icon, title, description, className, popColor, iconAnimation, cardAnimation } = props;
+  const { icon, title, description, className, popColor, iconAnimation, cardAnimation, variant = 'grid' } = props;
   defaultProps = props;
 
   // Pre-render the icon component
@@ -85,10 +73,11 @@ export function ServiceCard(props: ServiceCardProps) {
       <ClientServiceCard
         title={title}
         description={description}
-        className={twMerge(baseCardStyles, className)}
+        className={twMerge(cardVariants[variant], className)}
         iconComponent={iconComponent}
         iconAnimation={iconAnimation}
         cardAnimation={cardAnimation}
+        variant={variant}
       />
     );
   }
