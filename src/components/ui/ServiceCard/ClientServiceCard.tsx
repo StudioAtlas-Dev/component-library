@@ -5,6 +5,7 @@ import React, { useRef } from 'react';
 import { AnimeInstance } from 'animejs';
 import * as iconAnimations from './animations/iconAnimations';
 import * as cardAnimations from './animations/cardAnimations';
+import { cardVariants } from './types';
 
 interface ClientServiceCardProps {
   title: string;
@@ -13,7 +14,8 @@ interface ClientServiceCardProps {
   iconComponent: React.ReactNode;
   iconAnimation?: string;
   cardAnimation?: string;
-  variant?: 'grid' | 'list' | 'compact';
+  variant?: 'grid' | 'compact';
+  children?: React.ReactNode;
 }
 
 function ClientServiceCard({
@@ -23,7 +25,8 @@ function ClientServiceCard({
   iconComponent,
   iconAnimation = 'none',
   cardAnimation = 'none',
-  variant = 'grid'
+  variant = 'grid',
+  children
 }: ClientServiceCardProps) {
   const iconRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -136,6 +139,11 @@ function ClientServiceCard({
         <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
           {description}
         </p>
+        {children && (
+          <div className="mt-4">
+            {children}
+          </div>
+        )}
       </div>
       {/* Animated border overlay */}
       <div 

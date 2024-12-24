@@ -1,9 +1,12 @@
 import { IconType } from 'react-icons';
+import { ReactNode } from 'react';
 
 export interface ServiceCardData {
   icon: IconType;
   title: string;
   description: string;
+  href?: string;
+  children?: ReactNode;
 }
 
 export interface ServiceCardProps {
@@ -14,11 +17,12 @@ export interface ServiceCardProps {
   popColor?: string;
   iconAnimation?: string;
   cardAnimation?: string;
-  variant?: 'grid' | 'list' | 'compact';
+  variant?: 'grid' | 'compact';
+  href?: string;
+  children?: ReactNode;
 }
 
 export const cardVariants = {
   grid: "relative flex flex-col h-full px-6 sm:px-8 xl:px-12 py-8 border border-neutral-200 dark:border-neutral-800 service-card",
-  list: "relative flex flex-row h-full p-6 border border-neutral-200 dark:border-neutral-800 service-card",
   compact: "relative flex flex-col h-full p-4 border border-neutral-200 dark:border-neutral-800 service-card"
 }; 

@@ -1,6 +1,7 @@
 import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { ServiceCardProps, cardVariants } from './types';
 
 // Pre-render the icon on the server
@@ -14,7 +15,7 @@ function IconWrapper({ icon: Icon, color }: { icon: IconType; color?: string }) 
 }
 
 // Create a server-rendered version of the card that matches client exactly
-function BaseCard({ icon: Icon, title, description, className, popColor, variant = 'grid' }: ServiceCardProps) {
+function BaseCard({ icon: Icon, title, description, className, popColor, variant = 'grid', children }: ServiceCardProps) {
   const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
   return (
@@ -35,6 +36,11 @@ function BaseCard({ icon: Icon, title, description, className, popColor, variant
         <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
           {description}
         </p>
+        {children && (
+          <div className="mt-4">
+            {children}
+      </div>
+        )}
       </div>
       {/* Static border overlay - matches client structure */}
       <div 
@@ -61,26 +67,34 @@ const ClientServiceCard = dynamic(
 let defaultProps: ServiceCardProps;
 
 export function ServiceCard(props: ServiceCardProps) {
-  const { icon, title, description, className, popColor, iconAnimation, cardAnimation, variant = 'grid' } = props;
+  const { icon, title, description, className, popColor, iconAnimation, cardAnimation, variant = 'grid', href, children } = props;
   defaultProps = props;
 
   // Pre-render the icon component
   const iconComponent = <IconWrapper icon={icon} color={popColor} />;
 
-  // Only use client component if any animations are requested
-  if ((iconAnimation && iconAnimation !== 'none') || (cardAnimation && cardAnimation !== 'none')) {
+  // Ensure variant styles are applied
+  const mergedClassName = twMerge(cardVariants[variant], className);
+
+  // For client component, omit the icon prop and pass iconComponent instead
+  const clientProps = {
+    ...props,
+    className: mergedClassName,
+    iconComponent,
+    icon: undefined // Remove icon prop for client component
+  };
+
+  const cardWithStyles = (iconAnimation && iconAnimation !== 'none') || (cardAnimation && cardAnimation !== 'none')
+    ? <ClientServiceCard {...clientProps} />
+    : <BaseCard {...props} className={mergedClassName} />;
+
+  if (href) {
     return (
-      <ClientServiceCard
-        title={title}
-        description={description}
-        className={twMerge(cardVariants[variant], className)}
-        iconComponent={iconComponent}
-        iconAnimation={iconAnimation}
-        cardAnimation={cardAnimation}
-        variant={variant}
-      />
+      <Link href={href} className="block h-full">
+        {cardWithStyles}
+      </Link>
     );
   }
 
-  return <BaseCard {...props} />;
+  return cardWithStyles;
 } 
