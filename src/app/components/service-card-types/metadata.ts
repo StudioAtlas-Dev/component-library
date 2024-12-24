@@ -8,7 +8,6 @@ export const metadata = {
     "clsx",
     "tailwind-merge",
     "next",
-    "react-icons",
-    "animejs"
+    "react-icons"
   ]
 }; 

@@ -11,6 +11,13 @@ interface CardGridProps {
   variant?: ServiceCardProps['variant'];
 }
 
+// Define max cards per row for each variant
+const variantMaxRowSize: Record<NonNullable<ServiceCardProps['variant']>, number> = {
+  grid: 4,
+  compact: 4,
+  floating: 3
+};
+
 export function CardGrid({
   cards,
   popColor,
@@ -24,12 +31,15 @@ export function CardGrid({
     throw new Error('Cards array must contain between 2 and 8 items');
   }
 
-  // Default grid classes based on number of cards
-  const defaultGridClasses = cn(
-    "grid grid-cols-1 sm:grid-cols-2",
-    cards.length <= 4
-      ? `lg:grid-cols-${cards.length}` // Dynamically set the number of columns based on the number of cards
-      : "lg:grid-cols-4" // For 4-8 cards, show 4 per row creating 2 rows
+  const maxRowSize = variantMaxRowSize[variant];
+
+  // Calculate grid classes based on variant and number of cards
+  const gridClasses = cn(
+    "grid grid-cols-1 md:grid-cols-2",
+    // For 3 or fewer cards, or when using floating variant with 3 cards
+    cards.length <= 3 || (variant === 'floating' && cards.length === 3)
+      ? `lg:grid-cols-${cards.length}` 
+      : `lg:grid-cols-${maxRowSize}` // Otherwise use the variant's max row size
   );
 
   return (
@@ -43,7 +53,7 @@ export function CardGrid({
     >
       <div className="max-w-9xl mx-auto">
         <div className={cn(
-          defaultGridClasses,
+          gridClasses,
           variant === 'floating' 
             ? "gap-8 gap-y-16 px-4 sm:px-8 mt-20" 
             : "border-t border-l border-neutral-200 dark:border-neutral-800"
@@ -62,10 +72,13 @@ export function CardGrid({
                       // Base borders
                       "border-b border-r border-neutral-200 dark:border-neutral-800",
                       // Handle right borders at breakpoints
-                      "sm:[&:nth-child(2n)]:border-r-0",
-                      cards.length <= 4
-                        ? `lg:[&:nth-child(${cards.length}n)]:border-r-0 lg:[&:nth-child(-n+${cards.length})]:border-b-0`
-                        : "lg:[&:nth-child(4n)]:border-r-0 lg:[&:nth-child(n+5)]:border-b-0"
+                      "md:[&:nth-child(2n)]:border-r-0",
+                      // Handle borders based on max row size
+                      `lg:[&:nth-child(${maxRowSize}n)]:border-r-0`,
+                      // Handle bottom borders for complete rows
+                      cards.length <= maxRowSize
+                        ? `lg:[&:nth-child(-n+${cards.length})]:border-b-0`
+                        : `lg:[&:nth-child(n+${cards.length - (cards.length % maxRowSize || maxRowSize) + 1})]:border-b-0`
                     ]
               )}
               popColor={popColor}

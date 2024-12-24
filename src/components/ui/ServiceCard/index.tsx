@@ -63,60 +63,65 @@ export function renderCard({
   
   return (
     <div className="relative h-full" role="article">
-      <div 
-        ref={refs.cardRef}
-        className={className}
-        aria-labelledby={cardId}
-      >
-        {variant === 'floating' ? (
-          <div ref={refs.iconRef}>
-            {iconContent}
-          </div>
-        ) : (
-          <div 
-            ref={refs.iconRef}
-            className="w-8 h-8 mb-4"
-            aria-hidden="true"
-          >
-            {iconContent}
-          </div>
-        )}
-        <div className={variant === 'floating' ? 'mt-4' : undefined}>
-          <h3 
-            id={cardId}
-            className={cn(
-              "font-semibold mb-3",
-              variant === 'floating' 
-                ? "text-xl uppercase tracking-wide text-neutral-900 dark:text-neutral-100" 
-                : "text-lg sm:text-xl text-neutral-900 dark:text-neutral-100"
-            )}
-          >
-            {title}
-          </h3>
-          <p className={cn(
-            "text-neutral-600 dark:text-neutral-400",
-            variant === 'floating' 
-              ? "text-base leading-relaxed"
-              : "text-sm sm:text-base leading-relaxed"
-          )}>
-            {description}
-          </p>
-          {children && (
-            <div className="mt-4">
-              {children}
+      {/* Floating variant icon is outside the overflow hidden container */}
+      {variant === 'floating' && (
+        <div ref={refs.iconRef}>
+          {iconContent}
+        </div>
+      )}
+      {/* Main card content with overflow hidden */}
+      <div className="relative h-full overflow-hidden">
+        <div 
+          ref={refs.cardRef}
+          className={className}
+          aria-labelledby={cardId}
+        >
+          {variant !== 'floating' && (
+            <div 
+              ref={refs.iconRef}
+              className="w-8 h-8 mb-4"
+              aria-hidden="true"
+            >
+              {iconContent}
             </div>
           )}
+          <div className={variant === 'floating' ? 'mt-4' : undefined}>
+            <h3 
+              id={cardId}
+              className={cn(
+                "font-semibold mb-3",
+                variant === 'floating' 
+                  ? "text-xl uppercase tracking-wide text-neutral-900 dark:text-neutral-100" 
+                  : "text-lg sm:text-xl text-neutral-900 dark:text-neutral-100"
+              )}
+            >
+              {title}
+            </h3>
+            <p className={cn(
+              "text-neutral-600 dark:text-neutral-400",
+              variant === 'floating' 
+                ? "text-base leading-relaxed"
+                : "text-sm sm:text-base leading-relaxed"
+            )}>
+              {description}
+            </p>
+            {children && (
+              <div className="mt-4">
+                {children}
+              </div>
+            )}
+          </div>
         </div>
+        {/* Animation border overlay */}
+        {cardAnimation !== 'none' && (
+          <div 
+            ref={refs.borderRef}
+            className="absolute inset-0 pointer-events-none"
+            style={{ borderStyle: 'solid', borderWidth: 0, borderColor: 'transparent' }}
+            aria-hidden="true"
+          />
+        )}
       </div>
-      {/* Animation border overlay */}
-      {cardAnimation !== 'none' && (
-        <div 
-          ref={refs.borderRef}
-          className="absolute inset-0 pointer-events-none"
-          style={{ borderStyle: 'solid', borderWidth: 0, borderColor: 'transparent' }}
-          aria-hidden="true"
-        />
-      )}
     </div>
   );
 }

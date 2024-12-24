@@ -2,8 +2,7 @@
 
 import React, { useRef } from 'react';
 import { AnimeInstance } from 'animejs';
-import * as iconAnimations from './animations/iconAnimations';
-import * as cardAnimations from './animations/cardAnimations';
+import { getAnimation } from './animations/registry';
 import { renderCard } from './index';
 
 interface ClientServiceCardProps {
@@ -48,8 +47,9 @@ function ClientServiceCard({
         if (isIconAnimatingRef.current) {
           iconAnimationRef.current?.pause();
         }
-        if (iconAnimation === 'icon-360' && iconAnimations.icon360) {
-          iconAnimationRef.current = iconAnimations.icon360.enter(iconElement);
+        const iconAnim = getAnimation('icon', iconAnimation);
+        if (iconAnim) {
+          iconAnimationRef.current = iconAnim.enter(iconElement);
           iconAnimationRef.current.finished.then(() => {
             isIconAnimatingRef.current = false;
           });
@@ -62,8 +62,9 @@ function ClientServiceCard({
         if (isCardAnimatingRef.current) {
           cardAnimationRef.current?.pause();
         }
-        if (cardAnimation === 'thicken-border' && cardAnimations.thickenBorder) {
-          cardAnimationRef.current = cardAnimations.thickenBorder.enter(borderElement);
+        const cardAnim = getAnimation('card', cardAnimation);
+        if (cardAnim) {
+          cardAnimationRef.current = cardAnim.enter(borderElement);
           cardAnimationRef.current.finished.then(() => {
             isCardAnimatingRef.current = false;
           });
@@ -78,8 +79,9 @@ function ClientServiceCard({
         if (isIconAnimatingRef.current) {
           iconAnimationRef.current?.pause();
         }
-        if (iconAnimation === 'icon-360' && iconAnimations.icon360) {
-          iconAnimationRef.current = iconAnimations.icon360.leave(iconElement);
+        const iconAnim = getAnimation('icon', iconAnimation);
+        if (iconAnim) {
+          iconAnimationRef.current = iconAnim.leave(iconElement);
           iconAnimationRef.current.finished.then(() => {
             isIconAnimatingRef.current = false;
           });
@@ -92,8 +94,9 @@ function ClientServiceCard({
         if (isCardAnimatingRef.current) {
           cardAnimationRef.current?.pause();
         }
-        if (cardAnimation === 'thicken-border' && cardAnimations.thickenBorder) {
-          cardAnimationRef.current = cardAnimations.thickenBorder.leave(borderElement);
+        const cardAnim = getAnimation('card', cardAnimation);
+        if (cardAnim) {
+          cardAnimationRef.current = cardAnim.leave(borderElement);
           cardAnimationRef.current.finished.then(() => {
             isCardAnimatingRef.current = false;
           });

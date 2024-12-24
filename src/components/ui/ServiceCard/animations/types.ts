@@ -1,4 +1,4 @@
-import { AnimeInstance } from 'animejs';
+import type { AnimeInstance } from 'animejs';
 
 /**
  * Available animation effects for the ServiceCard icon.
