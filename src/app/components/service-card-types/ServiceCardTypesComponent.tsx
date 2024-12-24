@@ -52,8 +52,8 @@ const allDemoCards: ServiceCardData[] = [
 ];
 
 interface AnimationControls {
-  cardAnimation: CardAnimation;
-  iconAnimation: IconAnimation;
+  cardAnimation: string;
+  iconAnimation: string;
 }
 
 type Variant = NonNullable<ServiceCardProps['variant']>;
@@ -72,8 +72,12 @@ export default function ServiceCardTypesComponent() {
   const updateAnimation = (
     variant: Variant, 
     type: 'cardAnimation' | 'iconAnimation', 
-    value: CardAnimation | IconAnimation
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    // Convert selected options to space-separated string
+    const selectedValues = Array.from(event.target.selectedOptions).map((option: HTMLOptionElement) => option.value);
+    const value = selectedValues.length ? selectedValues.join(' ') : 'none';
+
     setVariantAnimations(prev => ({
       ...prev,
       [variant]: {
@@ -86,7 +90,7 @@ export default function ServiceCardTypesComponent() {
   return (
     <section className="w-full py-12 space-y-12">
       <div className="flex items-center justify-end px-4 sm:px-6 lg:px-8">
-        <p className="mr-4"> Number of Cards:</p>
+        <p className="mr-4">Number of Cards:</p>
         <select
           className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
           value={cardCount}
@@ -106,21 +110,22 @@ export default function ServiceCardTypesComponent() {
             <div className="flex gap-4">
               <select
                 className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
-                value={variantAnimations[variant].cardAnimation}
-                onChange={(e) => updateAnimation(variant, 'cardAnimation', e.target.value as CardAnimation)}
+                value={variantAnimations[variant].cardAnimation.split(' ')}
+                onChange={(e) => updateAnimation(variant, 'cardAnimation', e)}
+                multiple
+                size={3}
               >
-                <option value="" disabled>Card Animation</option>
-                <option value="none">No Card Animation</option>
                 <option value="thicken-border">Thicken Border</option>
               </select>
               <select
                 className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
-                value={variantAnimations[variant].iconAnimation}
-                onChange={(e) => updateAnimation(variant, 'iconAnimation', e.target.value as IconAnimation)}
+                value={variantAnimations[variant].iconAnimation.split(' ')}
+                onChange={(e) => updateAnimation(variant, 'iconAnimation', e)}
+                multiple
+                size={4}
               >
-                <option value="" disabled>Icon Animation</option>
-                <option value="none">No Icon Animation</option>
                 <option value="icon-360">360° Rotation</option>
+                <option value="lighten">Lighten Icon</option>
               </select>
             </div>
           </div>

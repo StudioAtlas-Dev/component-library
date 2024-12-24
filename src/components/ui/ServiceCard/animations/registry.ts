@@ -8,7 +8,8 @@ const cardAnimations = {
 } as const;
 
 const iconAnimations = {
-  'icon-360': require('./icon/rotate-360').rotate360
+  'icon-360': require('./icon/rotate-360').rotate360,
+  'lighten': require('./icon/lighten').lighten
 } as const;
 
 export type CardAnimation = keyof typeof cardAnimations;

@@ -25,5 +25,5 @@ export interface ServiceCardProps {
 export const cardVariants = {
   grid: "relative flex flex-col h-full px-6 sm:px-8 xl:px-12 py-8",
   compact: "relative flex flex-col h-full p-4",
-  floating: "relative flex flex-col h-full px-8 pt-12 pb-14 bg-slate-50 dark:bg-neutral-800 rounded-lg min-h-[250px]"
+  floating: "relative flex flex-col h-full px-8 pt-12 pb-14 bg-[#f7f7f7] dark:bg-neutral-800 rounded-lg min-h-[250px]"
 }; 

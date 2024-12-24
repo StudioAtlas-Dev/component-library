@@ -28,11 +28,13 @@ function IconWrapper({ icon: Icon, color, variant }: { icon: IconType; color?: s
       
     return (
       <div 
-        className="absolute -top-8 left-8 p-4 rounded-lg z-10"
+        className="absolute -top-8 left-8 p-4 rounded-lg z-10 service-card-icon-container"
         style={{ backgroundColor: darkerColor ? `#${darkerColor}` : '#1a4294' }}
+        data-color={color}
       >
         <Icon 
-          className="w-8 h-8 text-white" 
+          className="w-8 h-8 text-white service-card-icon" 
+          data-color={color}
         />
       </div>
     );
@@ -40,8 +42,9 @@ function IconWrapper({ icon: Icon, color, variant }: { icon: IconType; color?: s
 
   return (
     <Icon 
-      className="w-full h-full" 
+      className="w-full h-full service-card-icon z-10" 
       style={{ color }}
+      data-color={color}
     />
   );
 }
@@ -96,7 +99,7 @@ export function renderCard({
               {iconContent}
             </div>
           )}
-          <div className={variant === 'floating' ? 'mt-4' : undefined}>
+          <div className={`service-card-content ${variant === 'floating' ? 'mt-4' : undefined}`}>
             <h3 
               id={cardId}
               className={cn(
