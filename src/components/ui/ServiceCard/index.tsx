@@ -8,11 +8,22 @@ import { cn } from '@/lib/utils';
 // Pre-render the icon on the server
 function IconWrapper({ icon: Icon, color, variant }: { icon: IconType; color?: string; variant?: string }) {
   if (variant === 'floating') {
-    // Make the background color darker
+    // Calculate a darker version of the provided hex color
+    // Example: #007acc -> #00589c (20% darker)
     const darkerColor = color?.startsWith('#') 
-      ? color.replace(/^#/, '').match(/.{2}/g)?.map(c => 
-          Math.max(0, parseInt(c, 16) - 40).toString(16).padStart(2, '0')
-        ).join('')
+      ? color.replace(/^#/, '')          // Remove # prefix
+          .match(/.{2}/g)                // Split into array of 2-char hex values [00, 7a, cc]
+          ?.map(c => {
+            const rgbValue = parseInt(c, 16);          // Convert hex to decimal (0-255)
+            const darkerValue = Math.max(              // Reduce by x% (multiply by 1 - x)
+              0,                                       // Ensure we don't go below 0
+              Math.floor(rgbValue * 0.6)              // x% darker value
+            );
+            return darkerValue
+              .toString(16)                           // Convert back to hex
+              .padStart(2, '0');                      // Ensure 2 digits (e.g., '0c' instead of 'c')
+          })
+          .join('')                      // Rejoin hex values
       : color;
       
     return (
