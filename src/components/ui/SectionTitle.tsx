@@ -1,70 +1,60 @@
 import { cn } from '@/lib/utils';
 
 interface SectionTitleProps {
-  tagline: string;
+  tagline?: string;
   title: string;
-  description: string;
-  popColor?: string;
-  dark?: boolean;
-  alignLeft?: boolean;
+  description?: string;
   className?: string;
-  taglineClassName?: string;
   titleClassName?: string;
+  taglineClassName?: string;
   descriptionClassName?: string;
+  popColor?: string;
+  titleId?: string;
 }
 
 export default function SectionTitle({
   tagline,
   title,
   description,
-  popColor = '#2563eb',
-  dark = false,
-  alignLeft = false,
-  className,
-  taglineClassName,
-  titleClassName,
-  descriptionClassName
+  className = '',
+  titleClassName = '',
+  taglineClassName = '',
+  descriptionClassName = '',
+  popColor = '#007acc',
+  titleId
 }: SectionTitleProps) {
   return (
-    <div 
-      className={cn(
-        'text-center md:text-center px-4 pt-16 md:pt-24',
-        alignLeft && 'lg:text-left',
-        className
+    <div className={cn('text-center', className)}>
+      {tagline && (
+        <span
+          className={cn(
+            'inline-block text-sm font-semibold tracking-wider uppercase mb-4',
+            taglineClassName
+          )}
+          style={{ color: popColor }}
+        >
+          {tagline}
+        </span>
       )}
-      role="region"
-      aria-label={title}
-    >
-      <h3 
+      <h2
+        id={titleId}
         className={cn(
-          'text-sm font-semibold uppercase tracking-wider mb-3',
-          alignLeft && 'lg:mx-0',
-          taglineClassName
-        )}
-        style={{ color: popColor }}
-      >
-        {tagline}
-      </h3>
-      <h2 
-        className={cn(
-          'md:text-5xl text-4xl font-bold mb-4',
-          dark ? 'text-white' : 'text-gray-900',
-          alignLeft && 'lg:mx-0',
+          'text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100',
           titleClassName
         )}
       >
         {title}
       </h2>
-      <p 
-        className={cn(
-          'max-w-2xl mx-auto font-normal',
-          dark ? 'text-[#E6E6E6]' : 'text-gray-900',
-          alignLeft && 'lg:mx-0',
-          descriptionClassName
-        )}
-      >
-        {description}
-      </p>
+      {description && (
+        <p
+          className={cn(
+            'mt-4 text-lg text-neutral-600 dark:text-neutral-400',
+            descriptionClassName
+          )}
+        >
+          {description}
+        </p>
+      )}
     </div>
   );
 } 
