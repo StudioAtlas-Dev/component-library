@@ -17,12 +17,13 @@ export interface ServiceCardProps {
   popColor?: string;
   iconAnimation?: string;
   cardAnimation?: string;
-  variant?: 'grid' | 'compact';
+  variant?: 'grid' | 'compact' | 'floating';
   href?: string;
   children?: ReactNode;
 }
 
 export const cardVariants = {
-  grid: "relative flex flex-col h-full px-6 sm:px-8 xl:px-12 py-8 border border-neutral-200 dark:border-neutral-800 service-card",
-  compact: "relative flex flex-col h-full p-4 border border-neutral-200 dark:border-neutral-800 service-card"
+  grid: "relative flex flex-col h-full px-6 sm:px-8 xl:px-12 py-8",
+  compact: "relative flex flex-col h-full p-4",
+  floating: "relative flex flex-col h-full px-8 pt-12 pb-14 bg-slate-50 dark:bg-neutral-800 rounded-lg"
 }; 

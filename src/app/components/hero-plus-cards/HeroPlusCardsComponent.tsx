@@ -83,13 +83,15 @@ export default function HeroPlusCardsComponent({
       </div>
 
       {/* Cards Section */}
-      <CardGrid
-        cards={cards}
-        popColor={popColor}
-        iconAnimation="icon-360"
-        cardAnimation="thicken-border"
-        variant="grid"
-      />
+      <div className="mb-12">
+        <CardGrid
+          cards={cards}
+          popColor={popColor}
+          iconAnimation="icon-360"
+          cardAnimation="thicken-border"
+          variant="grid"
+        />
+      </div>
     </section>
   );
 }

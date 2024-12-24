@@ -5,6 +5,10 @@ export const metadata = {
   tags: ['demo', 'services', 'variants', 'animations', 'customizable'],
   dateAdded: '2024-12-23',
   dependencies: [
-
+    "clsx",
+    "tailwind-merge",
+    "next",
+    "react-icons",
+    "animejs"
   ]
 }; 

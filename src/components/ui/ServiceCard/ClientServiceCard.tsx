@@ -1,11 +1,10 @@
 'use client';
 
-import { twMerge } from 'tailwind-merge';
 import React, { useRef } from 'react';
 import { AnimeInstance } from 'animejs';
 import * as iconAnimations from './animations/iconAnimations';
 import * as cardAnimations from './animations/cardAnimations';
-import { cardVariants } from './types';
+import { renderCard } from './index';
 
 interface ClientServiceCardProps {
   title: string;
@@ -14,7 +13,7 @@ interface ClientServiceCardProps {
   iconComponent: React.ReactNode;
   iconAnimation?: string;
   cardAnimation?: string;
-  variant?: 'grid' | 'compact';
+  variant?: 'grid' | 'compact' | 'floating';
   children?: React.ReactNode;
 }
 
@@ -114,46 +113,16 @@ function ClientServiceCard({
     };
   }, [iconAnimation, cardAnimation]);
 
-  const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
-
-  return (
-    <div className="relative h-full" role="article">
-      <div 
-        ref={cardRef}
-        className={className}
-        aria-labelledby={cardId}
-      >
-        <div 
-          ref={iconRef}
-          className="w-8 h-8 mb-4"
-          aria-hidden="true"
-        >
-          {iconComponent}
-        </div>
-        <h3 
-          id={cardId}
-          className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-3"
-        >
-          {title}
-        </h3>
-        <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-          {description}
-        </p>
-        {children && (
-          <div className="mt-4">
-            {children}
-          </div>
-        )}
-      </div>
-      {/* Animated border overlay */}
-      <div 
-        ref={borderRef}
-        className="absolute inset-0 pointer-events-none border-0 border-current"
-        style={{ borderStyle: 'solid' }}
-        aria-hidden="true"
-      />
-    </div>
-  );
+  return renderCard({
+    title,
+    description,
+    className,
+    variant,
+    children,
+    iconContent: iconComponent,
+    refs: { cardRef, iconRef, borderRef },
+    cardAnimation
+  });
 }
 
 export default ClientServiceCard; 

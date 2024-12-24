@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { ServiceCard } from './index';
-import { ServiceCardData } from './types';
+import { ServiceCardData, ServiceCardProps } from './types';
 
 interface CardGridProps {
   cards: ServiceCardData[];
@@ -8,7 +8,7 @@ interface CardGridProps {
   className?: string;
   iconAnimation?: string;
   cardAnimation?: string;
-  variant?: 'grid' | 'compact';
+  variant?: ServiceCardProps['variant'];
 }
 
 export function CardGrid({
@@ -27,13 +27,13 @@ export function CardGrid({
   // Default grid classes based on number of cards
   const defaultGridClasses = cn(
     "grid grid-cols-1 sm:grid-cols-2",
-    cards.length <= 4 
+    cards.length <= 4
       ? `lg:grid-cols-${cards.length}` // Dynamically set the number of columns based on the number of cards
       : "lg:grid-cols-4" // For 4-8 cards, show 4 per row creating 2 rows
   );
 
   return (
-    <div 
+    <div
       className={cn(
         "w-full bg-white dark:bg-neutral-900",
         className
@@ -43,9 +43,10 @@ export function CardGrid({
     >
       <div className="max-w-9xl mx-auto">
         <div className={cn(
-          defaultGridClasses, 
-          className, 
-          "divide-x border border-neutral-200 dark:border-neutral-800"
+          defaultGridClasses,
+          variant === 'floating' 
+            ? "gap-8 gap-y-16 px-4 sm:px-8 mt-20" 
+            : "border-t border-l border-neutral-200 dark:border-neutral-800"
         )}>
           {cards.map((card, index) => (
             <ServiceCard
@@ -54,9 +55,18 @@ export function CardGrid({
               title={card.title}
               description={card.description}
               className={cn(
-                "bg-white dark:bg-neutral-900 border-0",
-                // Add bottom border to cards in first row of multi-row grid
-                cards.length > 4 && index < 4 && "border-b border-neutral-200 dark:border-neutral-800"
+                "bg-white dark:bg-neutral-900",
+                variant === 'floating' 
+                  ? "bg-slate-50 dark:bg-neutral-800" 
+                  : [
+                      // Base borders
+                      "border-b border-r border-neutral-200 dark:border-neutral-800",
+                      // Handle right borders at breakpoints
+                      "sm:[&:nth-child(2n)]:border-r-0",
+                      cards.length <= 4
+                        ? `lg:[&:nth-child(${cards.length}n)]:border-r-0 lg:[&:nth-child(-n+${cards.length})]:border-b-0`
+                        : "lg:[&:nth-child(4n)]:border-r-0 lg:[&:nth-child(n+5)]:border-b-0"
+                    ]
               )}
               popColor={popColor}
               iconAnimation={iconAnimation}

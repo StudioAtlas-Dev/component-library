@@ -10,41 +10,29 @@ export const thickenBorder: AnimationConfig = {
     // Get the parent grid's border color
     const parentGrid = borderElement.closest('[role="region"]');
     const dividerColor = parentGrid 
-      ? window.getComputedStyle(parentGrid.querySelector('.divide-x') || parentGrid).borderColor
-      : 'rgb(229, 231, 235)'; // Tailwind's neutral-200 as fallback
-    
-    // Set initial border color to prevent flash
-    borderElement.style.borderColor = dividerColor;
+      ? window.getComputedStyle(parentGrid.querySelector('.border-neutral-200') || parentGrid).borderColor
+      : '#e5e7eb'; // Tailwind's neutral-200 as fallback
     
     return anime({
       targets: borderElement,
       borderWidth: [0, 3],
       duration: 100,
-      easing: 'easeOutQuad'
+      easing: 'easeOutQuad',
+      begin: () => {
+        borderElement.style.borderColor = dividerColor;
+      }
     });
   },
   
   leave: (borderElement: HTMLElement) => {
-    // Get the parent grid's border color
-    const parentGrid = borderElement.closest('[role="region"]');
-    const dividerColor = parentGrid 
-      ? window.getComputedStyle(parentGrid.querySelector('.divide-x') || parentGrid).borderColor
-      : 'rgb(229, 231, 235)'; // Tailwind's neutral-200 as fallback
-    
-    // Ensure border color is set
-    borderElement.style.borderColor = dividerColor;
-    
-    const animation = anime({
+    return anime({
       targets: borderElement,
       borderWidth: [3, 0],
       duration: 100,
       easing: 'easeInQuad',
       complete: () => {
-        // Ensure border is completely removed after animation
         borderElement.style.borderWidth = '0px';
       }
     });
-
-    return animation;
   }
 }; 

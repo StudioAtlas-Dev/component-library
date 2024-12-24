@@ -5,10 +5,10 @@ export const metadata = {
   tags: ['layout', 'hero', 'services', 'customizable'],
   dateAdded: '2024-12-23',
   dependencies: [
-    "next",
     "react-icons",
-    "tailwind-merge",
     "clsx",
+    "tailwind-merge",
+    "next",
     "animejs",
     "@radix-ui",
     "class-variance-authority"
