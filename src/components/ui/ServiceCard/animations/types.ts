@@ -15,11 +15,12 @@ export type IconAnimation = 'none' | 'icon-360' | 'lighten';
  * Available animation effects for the ServiceCard itself.
  * - none: No animation
  * - thicken-border: Border thickens inward on hover
+ * - link-indicator: Shows a triangle in the bottom right corner
  * 
  * Multiple animations can be combined by separating them with spaces.
- * Example: 'thicken-border other-animation'
+ * Example: 'thicken-border link-indicator'
  */
-export type CardAnimation = 'none' | 'thicken-border';
+export type CardAnimation = 'none' | 'thicken-border' | 'link-indicator';
 
 /**
  * Interface for animation configurations

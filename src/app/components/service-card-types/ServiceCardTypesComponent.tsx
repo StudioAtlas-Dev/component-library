@@ -116,6 +116,7 @@ export default function ServiceCardTypesComponent() {
                 size={3}
               >
                 <option value="thicken-border">Thicken Border</option>
+                <option value="link-indicator">Link Indicator</option>
               </select>
               <select
                 className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"

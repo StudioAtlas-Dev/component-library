@@ -1,23 +1,20 @@
-import type { AnimationConfig } from './types';
+import { AnimationMap } from './types';
+import { thickenBorder } from './card/thicken-border';
+import { linkIndicator } from './card/link-indicator';
+import { rotate360 } from './icon/rotate-360';
+import { lighten } from './icon/lighten';
 
-export type AnimationType = 'card' | 'icon';
+const cardAnimations: AnimationMap = {
+  'thicken-border': thickenBorder,
+  'link-indicator': linkIndicator,
+};
 
-// Import all animations from their respective folders
-const cardAnimations = {
-  'thicken-border': require('./card/thicken-border').thickenBorder
-} as const;
+const iconAnimations: AnimationMap = {
+  'icon-360': rotate360,
+  'lighten': lighten,
+};
 
-const iconAnimations = {
-  'icon-360': require('./icon/rotate-360').rotate360,
-  'lighten': require('./icon/lighten').lighten
-} as const;
-
-export type CardAnimation = keyof typeof cardAnimations;
-export type IconAnimation = keyof typeof iconAnimations;
-
-export const getAnimation = (type: AnimationType, name: string): AnimationConfig | null => {
-  if (type === 'card') {
-    return cardAnimations[name as CardAnimation] ?? null;
-  }
-  return iconAnimations[name as IconAnimation] ?? null;
-}; 
+export function getAnimation(type: 'card' | 'icon', name: string) {
+  const animations = type === 'card' ? cardAnimations : iconAnimations;
+  return animations[name];
+} 
