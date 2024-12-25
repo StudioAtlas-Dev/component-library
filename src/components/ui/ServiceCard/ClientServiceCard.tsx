@@ -1,162 +1,117 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { AnimeInstance } from 'animejs';
-import { getAnimation } from './animations/registry';
-import { renderCard } from './index';
+import { useRef, useEffect } from 'react';
+import type { AnimeInstance } from 'animejs';
+import { cardAnimations, iconAnimations } from './animations/registry';
+import { renderCard } from '.';
+import { ServiceCardProps } from './types';
 
-interface ClientServiceCardProps {
-  title: string;
-  description: string;
-  className?: string;
+interface ClientServiceCardProps extends Omit<ServiceCardProps, 'icon'> {
   iconComponent: React.ReactNode;
-  iconAnimation?: string;
-  cardAnimation?: string;
-  variant?: 'grid' | 'compact' | 'floating';
-  children?: React.ReactNode;
-  activeDarkColor?: string;
+  activeDarkColor: string;
+  animationImage?: string;
 }
 
-export default function ClientServiceCard({
-  title,
-  description,
-  className,
-  iconComponent,
-  iconAnimation = 'none',
+export default function ClientServiceCard({ 
+  iconComponent, 
   cardAnimation = 'none',
-  variant = 'grid',
-  children,
-  activeDarkColor
+  iconAnimation = 'none',
+  activeDarkColor,
+  animationImage,
+  ...props 
 }: ClientServiceCardProps) {
-  const iconRef = useRef<HTMLDivElement>(null);
+  // Refs for animation targets
   const cardRef = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
   const borderRef = useRef<HTMLDivElement>(null);
-  const iconAnimationRef = useRef<AnimeInstance | null>(null);
-  const cardAnimationRef = useRef<AnimeInstance | null>(null);
-  const isIconAnimatingRef = useRef(false);
-  const isCardAnimatingRef = useRef(false);
+
+  // Track active animations for cleanup
+  const activeAnimations = useRef<AnimeInstance[]>([]);
 
   useEffect(() => {
-    if (!iconRef.current || !cardRef.current || !borderRef.current) return;
-
-    const iconElement = iconRef.current;
-    const cardElement = cardRef.current;
-    const borderElement = borderRef.current;
-
-    // Track all active animations for cleanup
-    const activeAnimations: AnimeInstance[] = [];
-
-    const mouseEnter = () => {
-      // Clean up any existing animations
-      activeAnimations.forEach(anim => anim.pause());
-      activeAnimations.length = 0;
-
-      // Handle icon animations
-      if (iconAnimation !== 'none') {
-        const iconAnimations = iconAnimation.split(' ').filter(Boolean);
-        iconAnimations.forEach(animName => {
-          const iconAnim = getAnimation('icon', animName);
-          if (iconAnim) {
-            const animation = iconAnim.enter(iconElement);
-            activeAnimations.push(animation);
-            if (animName === iconAnimations[iconAnimations.length - 1]) {
-              animation.finished.then(() => {
-                const index = activeAnimations.indexOf(animation);
-                if (index > -1) activeAnimations.splice(index, 1);
-              });
-            }
-          }
-        });
-      }
-
-      // Handle card animations
-      if (cardAnimation !== 'none') {
-        const cardAnimations = cardAnimation.split(' ').filter(Boolean);
-        cardAnimations.forEach(animName => {
-          const cardAnim = getAnimation('card', animName);
-          if (cardAnim) {
-            const animation = cardAnim.enter(borderElement);
-            activeAnimations.push(animation);
-            if (animName === cardAnimations[cardAnimations.length - 1]) {
-              animation.finished.then(() => {
-                const index = activeAnimations.indexOf(animation);
-                if (index > -1) activeAnimations.splice(index, 1);
-              });
-            }
-          }
-        });
-      }
+    // Clean up function that cancels all active animations
+    return () => {
+      activeAnimations.current.forEach(animation => animation.pause());
+      activeAnimations.current = [];
     };
+  }, []);
 
-    const mouseLeave = () => {
+  // Set up hover animations
+  useEffect(() => {
+    const card = cardRef.current;
+    const icon = iconRef.current;
+    const border = borderRef.current;
+    if (!card || !icon || !border) return;
+
+    function handleMouseEnter() {
       // Clean up any existing animations
-      activeAnimations.forEach(anim => anim.pause());
-      activeAnimations.length = 0;
+      activeAnimations.current.forEach(animation => animation.pause());
+      activeAnimations.current = [];
 
-      // Handle icon animations
-      if (iconAnimation !== 'none') {
-        const iconAnimations = iconAnimation.split(' ').filter(Boolean);
-        iconAnimations.forEach(animName => {
-          const iconAnim = getAnimation('icon', animName);
-          if (iconAnim) {
-            const animation = iconAnim.leave(iconElement);
-            activeAnimations.push(animation);
-            if (animName === iconAnimations[iconAnimations.length - 1]) {
-              animation.finished.then(() => {
-                const index = activeAnimations.indexOf(animation);
-                if (index > -1) activeAnimations.splice(index, 1);
-              });
-            }
-          }
-        });
-      }
-
-      // Handle card animations
+      // Start new animations
       if (cardAnimation !== 'none') {
-        const cardAnimations = cardAnimation.split(' ').filter(Boolean);
-        cardAnimations.forEach(animName => {
-          const cardAnim = getAnimation('card', animName);
-          if (cardAnim) {
-            const animation = cardAnim.leave(borderElement);
-            activeAnimations.push(animation);
-            if (animName === cardAnimations[cardAnimations.length - 1]) {
-              animation.finished.then(() => {
-                const index = activeAnimations.indexOf(animation);
-                if (index > -1) activeAnimations.splice(index, 1);
-              });
-            }
+        cardAnimation.split(' ').forEach(animationType => {
+          const cardAnim = cardAnimations[animationType];
+          if (cardAnim && border) {
+            const animation = cardAnim.enter(border);
+            if (animation) activeAnimations.current.push(animation);
           }
         });
       }
-    };
 
-    cardElement.addEventListener('mouseenter', mouseEnter);
-    cardElement.addEventListener('mouseleave', mouseLeave);
+      if (iconAnimation !== 'none') {
+        iconAnimation.split(' ').forEach(animationType => {
+          const iconAnim = iconAnimations[animationType];
+          if (iconAnim && icon) {
+            const animation = iconAnim.enter(icon);
+            if (animation) activeAnimations.current.push(animation);
+          }
+        });
+      }
+    }
+
+    function handleMouseLeave() {
+      // Clean up any existing animations
+      activeAnimations.current.forEach(animation => animation.pause());
+      activeAnimations.current = [];
+
+      // Start new animations
+      if (cardAnimation !== 'none') {
+        cardAnimation.split(' ').forEach(animationType => {
+          const cardAnim = cardAnimations[animationType];
+          if (cardAnim && border) {
+            const animation = cardAnim.leave(border);
+            if (animation) activeAnimations.current.push(animation);
+          }
+        });
+      }
+
+      if (iconAnimation !== 'none') {
+        iconAnimation.split(' ').forEach(animationType => {
+          const iconAnim = iconAnimations[animationType];
+          if (iconAnim && icon) {
+            const animation = iconAnim.leave(icon);
+            if (animation) activeAnimations.current.push(animation);
+          }
+        });
+      }
+    }
+
+    card.addEventListener('mouseenter', handleMouseEnter);
+    card.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
-      cardElement.removeEventListener('mouseenter', mouseEnter);
-      cardElement.removeEventListener('mouseleave', mouseLeave);
-      // Clean up any remaining animations
-      activeAnimations.forEach(anim => {
-        anim.pause();
-        // Ensure animation is at its starting state
-        if (anim.progress) {
-          anim.seek(0);
-        }
-      });
-      activeAnimations.length = 0;
+      card.removeEventListener('mouseenter', handleMouseEnter);
+      card.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, [cardAnimation, iconAnimation]);
 
   return renderCard({
-    title,
-    description,
-    className,
-    variant,
-    children,
+    ...props,
     iconContent: iconComponent,
     refs: { cardRef, iconRef, borderRef },
     cardAnimation,
-    activeDarkColor
+    activeDarkColor,
+    animationImage
   });
 } 

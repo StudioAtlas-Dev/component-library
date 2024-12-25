@@ -2,6 +2,7 @@ import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ServiceCardProps, cardVariants } from './types';
 import { cn } from '@/lib/utils';
 
@@ -94,7 +95,8 @@ export function renderCard({
   iconContent,
   refs = {},
   cardAnimation = 'none',
-  activeDarkColor
+  activeDarkColor,
+  animationImage
 }: {
   title: string;
   description: string;
@@ -109,11 +111,26 @@ export function renderCard({
   };
   cardAnimation?: string;
   activeDarkColor?: string;
+  animationImage?: string;
 }) {
   const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
   return (
     <div className="relative h-full" role="article">
+      {/* Hidden image preload for animation */}
+      {animationImage && (
+        <div className="hidden">
+          <Image
+            src={animationImage}
+            alt=""
+            className="w-full object-cover object-top"
+            fill
+            sizes="100vw"
+            priority={false}
+            quality={75}
+          />
+        </div>
+      )}
       {/* Floating variant icon is outside the overflow hidden container */}
       {variant === 'floating' && (
         <div ref={refs.iconRef}>
@@ -121,12 +138,13 @@ export function renderCard({
         </div>
       )}
       {/* Main card content with overflow hidden */}
-        <div 
-          ref={refs.cardRef}
+      <div 
+        ref={refs.cardRef}
         className={cn("service-card relative h-full overflow-hidden", className)}
-          aria-labelledby={cardId}
+        aria-labelledby={cardId}
         data-active-dark-color={activeDarkColor}
-        >
+        data-animation-image={animationImage}
+      >
         <div>
           {variant !== 'floating' && (
             <div 
@@ -187,8 +205,9 @@ function BaseCard({
   popColor, 
   variant = 'grid', 
   children,
-  activeDarkColor 
-}: ServiceCardProps & { activeDarkColor: string }) {
+  activeDarkColor,
+  animationImage
+}: ServiceCardProps & { activeDarkColor: string, animationImage?: string }) {
   return renderCard({
     title,
     description,
@@ -197,7 +216,8 @@ function BaseCard({
     children,
     iconContent: <IconWrapper icon={Icon} color={popColor} variant={variant} activeDarkColor={activeDarkColor} />,
     cardAnimation: 'none',
-    activeDarkColor
+    activeDarkColor,
+    animationImage
   });
 }
 
@@ -220,7 +240,20 @@ const ClientServiceCard = dynamic(
 let defaultProps: ServiceCardProps;
 
 export function ServiceCard(props: ServiceCardProps) {
-  const { icon, title, description, className, popColor, darkColor, iconAnimation, cardAnimation = 'none', variant = 'grid', href, children } = props;
+  const { 
+    icon, 
+    title, 
+    description, 
+    className, 
+    popColor, 
+    darkColor, 
+    iconAnimation, 
+    cardAnimation = 'none', 
+    variant = 'grid', 
+    href, 
+    children,
+    animationImage 
+  } = props;
 
   // Determine the active dark color once, with fallback
   const activeDarkColor = darkColor || calculateDarkerColor(popColor) || '#1a4294';
@@ -249,12 +282,13 @@ export function ServiceCard(props: ServiceCardProps) {
     iconComponent,
     icon: undefined, // Remove icon prop for client component
     cardAnimation,
-    activeDarkColor // Pass the active dark color to client component
+    activeDarkColor, // Pass the active dark color to client component
+    animationImage
   };
 
   const cardWithStyles = cardAnimation !== 'none'
     ? <ClientServiceCard {...clientProps} />
-    : <BaseCard {...props} className={mergedClassName} activeDarkColor={activeDarkColor} />;
+    : <BaseCard {...props} className={mergedClassName} activeDarkColor={activeDarkColor} animationImage={animationImage} />;
 
   if (href) {
     return (

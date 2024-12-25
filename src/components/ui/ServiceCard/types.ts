@@ -22,6 +22,7 @@ export interface ServiceCardProps {
   variant?: 'grid' | 'compact' | 'floating';
   href?: string;
   children?: ReactNode;
+  animationImage?: string;
 }
 
 export const cardVariants = {

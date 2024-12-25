@@ -10,6 +10,8 @@ interface CardGridProps {
   iconAnimation?: string;
   cardAnimation?: string;
   variant?: ServiceCardProps['variant'];
+  centerWithinRow?: boolean;
+  animationImage?: string;
 }
 
 // Define max cards per row for each variant
@@ -26,7 +28,9 @@ export function CardGrid({
   className,
   iconAnimation = 'icon-360',
   cardAnimation = 'thicken-border',
-  variant = 'grid'
+  variant = 'grid',
+  centerWithinRow = false,
+  animationImage
 }: CardGridProps) {
   // Validate cards length
   if (cards.length < 2 || cards.length > 8) {
@@ -90,6 +94,7 @@ export function CardGrid({
               iconAnimation={iconAnimation}
               cardAnimation={cardAnimation}
               variant={variant}
+              animationImage={animationImage}
             />
           ))}
         </div>

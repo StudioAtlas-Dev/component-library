@@ -116,6 +116,7 @@ export default function ServiceCardTypesComponent() {
                 <option value="thicken-border">Thicken Border</option>
                 <option value="link-indicator">Link Indicator</option>
                 <option value="darken-background">Darken Background</option>
+                <option value="raise-background-image">Raise in Background Image</option>
               </select>
               <select
                 className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
@@ -136,6 +137,7 @@ export default function ServiceCardTypesComponent() {
             iconAnimation={variantAnimations[variant].iconAnimation}
             popColor="#1aa3ff"
             darkColor="hsl(204, 100%, 15%)"
+            animationImage='/images/snowflake.avif'
           />
         </div>
       ))}
