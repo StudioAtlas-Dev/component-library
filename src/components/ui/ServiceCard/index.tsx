@@ -7,50 +7,80 @@ import { cn } from '@/lib/utils';
 
 // Pre-render the icon on the server
 function calculateDarkerColor(color?: string) {
-  // Calculate a darker version of the provided hex color
-  // Example: #007acc -> #00589c (40% darker)
-  return color?.startsWith('#') 
-    ? color.replace(/^#/, '')          // Remove # prefix
+  if (!color) return undefined;
+
+  // Handle HSL format
+  if (color.toLowerCase().startsWith('hsl')) {
+    const matches = color.match(/\d+(\.\d+)?/g);
+    if (matches) {
+      const [h, s, l] = matches.map(Number);
+      // Reduce lightness by 50%
+      return `hsl(${h}, ${s}%, ${Math.max(0, l * 0.5)}%)`;
+    }
+    return color;
+  }
+
+  // Handle hex format
+  if (color.startsWith('#')) {
+    return '#' + color.replace(/^#/, '')          // Remove # prefix
         .match(/.{2}/g)                // Split into array of 2-char hex values [00, 7a, cc]
         ?.map(c => {
           const rgbValue = parseInt(c, 16);          // Convert hex to decimal (0-255)
           const darkerValue = Math.max(              // Reduce by x% (multiply by 1 - x)
             0,                                       // Ensure we don't go below 0
-            Math.floor(rgbValue * 0.6)              // x% darker value
+            Math.floor(rgbValue * 0.5)              // x% darker value
           );
           return darkerValue
             .toString(16)                           // Convert back to hex
             .padStart(2, '0');                      // Ensure 2 digits (e.g., '0c' instead of 'c')
         })
-        .join('')                      // Rejoin hex values
-    : color;
+      .join('');                      // Rejoin hex values
+  }
+
+  return color;
 }
 
-function IconWrapper({ icon: Icon, color, variant, darkColor }: { icon: IconType; color?: string; variant?: string; darkColor?: string }) {
+function IconWrapper({ 
+  icon: Icon, 
+  color, 
+  variant, 
+  activeDarkColor 
+}: { 
+  icon: IconType; 
+  color?: string; 
+  variant?: string; 
+  activeDarkColor: string;
+}) {
   if (variant === 'floating') {
-    // Use provided darkColor or calculate it
-    const finalDarkColor = darkColor?.replace(/^#/, '') || calculateDarkerColor(color);
-      
     return (
       <div 
         className="absolute -top-8 left-8 p-4 rounded-lg z-10 service-card-icon-container"
-        style={{ backgroundColor: finalDarkColor ? `#${finalDarkColor}` : '#1a4294' }}
+        style={{ backgroundColor: activeDarkColor }}
         data-color={color}
+        data-active-dark-color={activeDarkColor}
       >
         <Icon 
           className="w-8 h-8 text-white service-card-icon" 
           data-color={color}
+          data-active-dark-color={activeDarkColor}
         />
       </div>
     );
   }
 
   return (
-    <Icon 
-      className="w-full h-full service-card-icon z-10" 
-      style={{ color }}
-      data-color={color}
-    />
+    <div className="relative w-8 h-8">
+      <div 
+        className="absolute -inset-2 rounded-full service-card-icon-container"
+        style={{ backgroundColor: '#ffffff' }}
+      />
+      <Icon 
+        className="w-full h-full service-card-icon relative z-10" 
+        style={{ color }}
+        data-color={color}
+        data-active-dark-color={activeDarkColor}
+      />
+    </div>
   );
 }
 
@@ -63,7 +93,8 @@ export function renderCard({
   children,
   iconContent,
   refs = {},
-  cardAnimation = 'none'
+  cardAnimation = 'none',
+  activeDarkColor
 }: {
   title: string;
   description: string;
@@ -77,6 +108,7 @@ export function renderCard({
     borderRef?: React.RefObject<HTMLDivElement>;
   };
   cardAnimation?: string;
+  activeDarkColor?: string;
 }) {
   const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
@@ -89,12 +121,13 @@ export function renderCard({
         </div>
       )}
       {/* Main card content with overflow hidden */}
-      <div className="relative h-full overflow-hidden">
         <div 
           ref={refs.cardRef}
-          className={className}
+        className={cn("service-card relative h-full overflow-hidden", className)}
           aria-labelledby={cardId}
+        data-active-dark-color={activeDarkColor}
         >
+        <div>
           {variant !== 'floating' && (
             <div 
               ref={refs.iconRef}
@@ -146,15 +179,25 @@ export function renderCard({
 }
 
 // Create a server-rendered version of the card that matches client exactly
-function BaseCard({ icon: Icon, title, description, className, popColor, darkColor, variant = 'grid', children }: ServiceCardProps) {
+function BaseCard({ 
+  icon: Icon, 
+  title, 
+  description, 
+  className, 
+  popColor, 
+  variant = 'grid', 
+  children,
+  activeDarkColor 
+}: ServiceCardProps & { activeDarkColor: string }) {
   return renderCard({
     title,
     description,
     className: twMerge(cardVariants[variant], className),
     variant,
     children,
-    iconContent: <IconWrapper icon={Icon} color={popColor} darkColor={darkColor} variant={variant} />,
-    cardAnimation: 'none'
+    iconContent: <IconWrapper icon={Icon} color={popColor} variant={variant} activeDarkColor={activeDarkColor} />,
+    cardAnimation: 'none',
+    activeDarkColor
   });
 }
 
@@ -165,7 +208,11 @@ const ClientServiceCard = dynamic(
     ssr: true,
     loading: ({ error }) => {
       if (error) return <div>Error loading card</div>;
-      return <BaseCard {...defaultProps} />;
+      // Calculate activeDarkColor for loading state
+      const activeDarkColor = defaultProps.darkColor || 
+        calculateDarkerColor(defaultProps.popColor) || 
+        '#1a4294';
+      return <BaseCard {...defaultProps} activeDarkColor={activeDarkColor} />;
     }
   }
 );
@@ -174,10 +221,20 @@ let defaultProps: ServiceCardProps;
 
 export function ServiceCard(props: ServiceCardProps) {
   const { icon, title, description, className, popColor, darkColor, iconAnimation, cardAnimation = 'none', variant = 'grid', href, children } = props;
+
+  // Determine the active dark color once, with fallback
+  const activeDarkColor = darkColor || calculateDarkerColor(popColor) || '#1a4294';
+
+  // Set defaultProps without activeDarkColor (it's calculated in the loading component)
   defaultProps = props;
 
   // Pre-render the icon component
-  const iconComponent = <IconWrapper icon={icon} color={popColor} darkColor={darkColor} variant={variant} />;
+  const iconComponent = <IconWrapper 
+    icon={icon} 
+    color={popColor} 
+    variant={variant} 
+    activeDarkColor={activeDarkColor} 
+  />;
 
   // Ensure variant styles are applied and remove duplicate service-card class
   const mergedClassName = twMerge(
@@ -191,12 +248,13 @@ export function ServiceCard(props: ServiceCardProps) {
     className: mergedClassName,
     iconComponent,
     icon: undefined, // Remove icon prop for client component
-    cardAnimation
+    cardAnimation,
+    activeDarkColor // Pass the active dark color to client component
   };
 
   const cardWithStyles = cardAnimation !== 'none'
     ? <ClientServiceCard {...clientProps} />
-    : <BaseCard {...props} className={mergedClassName} />;
+    : <BaseCard {...props} className={mergedClassName} activeDarkColor={activeDarkColor} />;
 
   if (href) {
     return (

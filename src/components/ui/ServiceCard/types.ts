@@ -16,6 +16,7 @@ export interface ServiceCardProps {
   className?: string;
   popColor?: string;
   darkColor?: string;
+  activeDarkColor?: string;
   iconAnimation?: string;
   cardAnimation?: string;
   variant?: 'grid' | 'compact' | 'floating';

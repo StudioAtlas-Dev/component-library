@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { AnimeInstance } from 'animejs';
 import { getAnimation } from './animations/registry';
 import { renderCard } from './index';
@@ -14,9 +14,10 @@ interface ClientServiceCardProps {
   cardAnimation?: string;
   variant?: 'grid' | 'compact' | 'floating';
   children?: React.ReactNode;
+  activeDarkColor?: string;
 }
 
-function ClientServiceCard({
+export default function ClientServiceCard({
   title,
   description,
   className,
@@ -24,7 +25,8 @@ function ClientServiceCard({
   iconAnimation = 'none',
   cardAnimation = 'none',
   variant = 'grid',
-  children
+  children,
+  activeDarkColor
 }: ClientServiceCardProps) {
   const iconRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ function ClientServiceCard({
   const isIconAnimatingRef = useRef(false);
   const isCardAnimatingRef = useRef(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!iconRef.current || !cardRef.current || !borderRef.current) return;
 
     const iconElement = iconRef.current;
@@ -144,7 +146,7 @@ function ClientServiceCard({
       });
       activeAnimations.length = 0;
     };
-  }, [iconAnimation, cardAnimation]);
+  }, [cardAnimation, iconAnimation]);
 
   return renderCard({
     title,
@@ -154,8 +156,7 @@ function ClientServiceCard({
     children,
     iconContent: iconComponent,
     refs: { cardRef, iconRef, borderRef },
-    cardAnimation
+    cardAnimation,
+    activeDarkColor
   });
-}
-
-export default ClientServiceCard; 
+} 

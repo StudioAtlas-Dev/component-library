@@ -16,11 +16,12 @@ export type IconAnimation = 'none' | 'icon-360' | 'lighten';
  * - none: No animation
  * - thicken-border: Border thickens inward on hover
  * - link-indicator: Shows a triangle in the bottom right corner
+ * - darken-background: Darkens the card background using the active dark color
  * 
  * Multiple animations can be combined by separating them with spaces.
  * Example: 'thicken-border link-indicator'
  */
-export type CardAnimation = 'none' | 'thicken-border' | 'link-indicator';
+export type CardAnimation = 'none' | 'thicken-border' | 'link-indicator' | 'darken-background';
 
 /**
  * Interface for animation configurations
