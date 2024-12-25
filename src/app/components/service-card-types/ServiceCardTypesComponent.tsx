@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { FiGlobe, FiClock, FiAward, FiTarget, FiUsers, FiTrendingUp, FiShield, FiHeart } from 'react-icons/fi';
 import { CardGrid } from '@/components/ui/ServiceCard/CardGrid';
 import { ServiceCardData, ServiceCardProps } from '@/components/ui/ServiceCard/types';
-import { IconAnimation, CardAnimation } from '@/components/ui/ServiceCard/animations/types';
-import { cn } from '@/lib/utils';
 
 // All possible demo cards
 const allDemoCards: ServiceCardData[] = [
@@ -123,7 +121,7 @@ export default function ServiceCardTypesComponent() {
                 value={variantAnimations[variant].iconAnimation.split(' ')}
                 onChange={(e) => updateAnimation(variant, 'iconAnimation', e)}
                 multiple
-                size={4}
+                size={3}
               >
                 <option value="icon-360">360° Rotation</option>
                 <option value="lighten">Lighten Icon</option>
@@ -136,6 +134,7 @@ export default function ServiceCardTypesComponent() {
             cardAnimation={variantAnimations[variant].cardAnimation}
             iconAnimation={variantAnimations[variant].iconAnimation}
             popColor="#007acc"
+            darkColor="#00497a"
           />
         </div>
       ))}

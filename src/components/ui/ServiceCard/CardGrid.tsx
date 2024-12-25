@@ -5,6 +5,7 @@ import { ServiceCardData, ServiceCardProps } from './types';
 interface CardGridProps {
   cards: ServiceCardData[];
   popColor?: string;
+  darkColor?: string;
   className?: string;
   iconAnimation?: string;
   cardAnimation?: string;
@@ -21,6 +22,7 @@ const variantMaxRowSize: Record<NonNullable<ServiceCardProps['variant']>, number
 export function CardGrid({
   cards,
   popColor,
+  darkColor,
   className,
   iconAnimation = 'icon-360',
   cardAnimation = 'thicken-border',
@@ -84,6 +86,7 @@ export function CardGrid({
                     ]
               )}
               popColor={popColor}
+              darkColor={darkColor}
               iconAnimation={iconAnimation}
               cardAnimation={cardAnimation}
               variant={variant}

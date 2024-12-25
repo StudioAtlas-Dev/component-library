@@ -6,30 +6,35 @@ import { ServiceCardProps, cardVariants } from './types';
 import { cn } from '@/lib/utils';
 
 // Pre-render the icon on the server
-function IconWrapper({ icon: Icon, color, variant }: { icon: IconType; color?: string; variant?: string }) {
+function calculateDarkerColor(color?: string) {
+  // Calculate a darker version of the provided hex color
+  // Example: #007acc -> #00589c (40% darker)
+  return color?.startsWith('#') 
+    ? color.replace(/^#/, '')          // Remove # prefix
+        .match(/.{2}/g)                // Split into array of 2-char hex values [00, 7a, cc]
+        ?.map(c => {
+          const rgbValue = parseInt(c, 16);          // Convert hex to decimal (0-255)
+          const darkerValue = Math.max(              // Reduce by x% (multiply by 1 - x)
+            0,                                       // Ensure we don't go below 0
+            Math.floor(rgbValue * 0.6)              // x% darker value
+          );
+          return darkerValue
+            .toString(16)                           // Convert back to hex
+            .padStart(2, '0');                      // Ensure 2 digits (e.g., '0c' instead of 'c')
+        })
+        .join('')                      // Rejoin hex values
+    : color;
+}
+
+function IconWrapper({ icon: Icon, color, variant, darkColor }: { icon: IconType; color?: string; variant?: string; darkColor?: string }) {
   if (variant === 'floating') {
-    // Calculate a darker version of the provided hex color
-    // Example: #007acc -> #00589c (20% darker)
-    const darkerColor = color?.startsWith('#') 
-      ? color.replace(/^#/, '')          // Remove # prefix
-          .match(/.{2}/g)                // Split into array of 2-char hex values [00, 7a, cc]
-          ?.map(c => {
-            const rgbValue = parseInt(c, 16);          // Convert hex to decimal (0-255)
-            const darkerValue = Math.max(              // Reduce by x% (multiply by 1 - x)
-              0,                                       // Ensure we don't go below 0
-              Math.floor(rgbValue * 0.6)              // x% darker value
-            );
-            return darkerValue
-              .toString(16)                           // Convert back to hex
-              .padStart(2, '0');                      // Ensure 2 digits (e.g., '0c' instead of 'c')
-          })
-          .join('')                      // Rejoin hex values
-      : color;
+    // Use provided darkColor or calculate it
+    const finalDarkColor = darkColor?.replace(/^#/, '') || calculateDarkerColor(color);
       
     return (
       <div 
         className="absolute -top-8 left-8 p-4 rounded-lg z-10 service-card-icon-container"
-        style={{ backgroundColor: darkerColor ? `#${darkerColor}` : '#1a4294' }}
+        style={{ backgroundColor: finalDarkColor ? `#${finalDarkColor}` : '#1a4294' }}
         data-color={color}
       >
         <Icon 
@@ -141,14 +146,14 @@ export function renderCard({
 }
 
 // Create a server-rendered version of the card that matches client exactly
-function BaseCard({ icon: Icon, title, description, className, popColor, variant = 'grid', children }: ServiceCardProps) {
+function BaseCard({ icon: Icon, title, description, className, popColor, darkColor, variant = 'grid', children }: ServiceCardProps) {
   return renderCard({
     title,
     description,
     className: twMerge(cardVariants[variant], className),
     variant,
     children,
-    iconContent: <IconWrapper icon={Icon} color={popColor} variant={variant} />,
+    iconContent: <IconWrapper icon={Icon} color={popColor} darkColor={darkColor} variant={variant} />,
     cardAnimation: 'none'
   });
 }
@@ -168,11 +173,11 @@ const ClientServiceCard = dynamic(
 let defaultProps: ServiceCardProps;
 
 export function ServiceCard(props: ServiceCardProps) {
-  const { icon, title, description, className, popColor, iconAnimation, cardAnimation = 'none', variant = 'grid', href, children } = props;
+  const { icon, title, description, className, popColor, darkColor, iconAnimation, cardAnimation = 'none', variant = 'grid', href, children } = props;
   defaultProps = props;
 
   // Pre-render the icon component
-  const iconComponent = <IconWrapper icon={icon} color={popColor} variant={variant} />;
+  const iconComponent = <IconWrapper icon={icon} color={popColor} darkColor={darkColor} variant={variant} />;
 
   // Ensure variant styles are applied and remove duplicate service-card class
   const mergedClassName = twMerge(
