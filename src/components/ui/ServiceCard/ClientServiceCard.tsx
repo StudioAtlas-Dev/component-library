@@ -41,99 +41,90 @@ function ClientServiceCard({
     const cardElement = cardRef.current;
     const borderElement = borderRef.current;
 
+    // Track all active animations for cleanup
+    const activeAnimations: AnimeInstance[] = [];
+
     const mouseEnter = () => {
-      // Handle icon animations - now supports multiple animations separated by spaces
+      // Clean up any existing animations
+      activeAnimations.forEach(anim => anim.pause());
+      activeAnimations.length = 0;
+
+      // Handle icon animations
       if (iconAnimation !== 'none') {
-        if (isIconAnimatingRef.current) {
-          iconAnimationRef.current?.pause();
-        }
-        // Split animations by spaces and run each one
         const iconAnimations = iconAnimation.split(' ').filter(Boolean);
         iconAnimations.forEach(animName => {
           const iconAnim = getAnimation('icon', animName);
           if (iconAnim) {
             const animation = iconAnim.enter(iconElement);
-            // Store the last animation for cleanup
+            activeAnimations.push(animation);
             if (animName === iconAnimations[iconAnimations.length - 1]) {
-              iconAnimationRef.current = animation;
               animation.finished.then(() => {
-                isIconAnimatingRef.current = false;
+                const index = activeAnimations.indexOf(animation);
+                if (index > -1) activeAnimations.splice(index, 1);
               });
             }
           }
         });
-        isIconAnimatingRef.current = true;
       }
 
-      // Handle card animations - now supports multiple animations separated by spaces
+      // Handle card animations
       if (cardAnimation !== 'none') {
-        if (isCardAnimatingRef.current) {
-          cardAnimationRef.current?.pause();
-        }
-        // Split animations by spaces and run each one
         const cardAnimations = cardAnimation.split(' ').filter(Boolean);
         cardAnimations.forEach(animName => {
           const cardAnim = getAnimation('card', animName);
           if (cardAnim) {
             const animation = cardAnim.enter(borderElement);
-            // Store the last animation for cleanup
+            activeAnimations.push(animation);
             if (animName === cardAnimations[cardAnimations.length - 1]) {
-              cardAnimationRef.current = animation;
               animation.finished.then(() => {
-                isCardAnimatingRef.current = false;
+                const index = activeAnimations.indexOf(animation);
+                if (index > -1) activeAnimations.splice(index, 1);
               });
             }
           }
         });
-        isCardAnimatingRef.current = true;
       }
     };
 
     const mouseLeave = () => {
-      // Handle icon animations - now supports multiple animations separated by spaces
+      // Clean up any existing animations
+      activeAnimations.forEach(anim => anim.pause());
+      activeAnimations.length = 0;
+
+      // Handle icon animations
       if (iconAnimation !== 'none') {
-        if (isIconAnimatingRef.current) {
-          iconAnimationRef.current?.pause();
-        }
-        // Split animations by spaces and run each one
         const iconAnimations = iconAnimation.split(' ').filter(Boolean);
         iconAnimations.forEach(animName => {
           const iconAnim = getAnimation('icon', animName);
           if (iconAnim) {
             const animation = iconAnim.leave(iconElement);
-            // Store the last animation for cleanup
+            activeAnimations.push(animation);
             if (animName === iconAnimations[iconAnimations.length - 1]) {
-              iconAnimationRef.current = animation;
               animation.finished.then(() => {
-                isIconAnimatingRef.current = false;
+                const index = activeAnimations.indexOf(animation);
+                if (index > -1) activeAnimations.splice(index, 1);
               });
             }
           }
         });
-        isIconAnimatingRef.current = true;
       }
 
-      // Handle card animations - now supports multiple animations separated by spaces
+      // Handle card animations
       if (cardAnimation !== 'none') {
-        if (isCardAnimatingRef.current) {
-          cardAnimationRef.current?.pause();
-        }
-        // Split animations by spaces and run each one
         const cardAnimations = cardAnimation.split(' ').filter(Boolean);
         cardAnimations.forEach(animName => {
           const cardAnim = getAnimation('card', animName);
           if (cardAnim) {
             const animation = cardAnim.leave(borderElement);
-            // Store the last animation for cleanup
+            activeAnimations.push(animation);
             if (animName === cardAnimations[cardAnimations.length - 1]) {
-              cardAnimationRef.current = animation;
               animation.finished.then(() => {
-                isCardAnimatingRef.current = false;
+                const index = activeAnimations.indexOf(animation);
+                if (index > -1) activeAnimations.splice(index, 1);
               });
             }
           }
         });
-        isCardAnimatingRef.current = true;
       }
     };
 
@@ -143,8 +134,15 @@ function ClientServiceCard({
     return () => {
       cardElement.removeEventListener('mouseenter', mouseEnter);
       cardElement.removeEventListener('mouseleave', mouseLeave);
-      iconAnimationRef.current?.pause();
-      cardAnimationRef.current?.pause();
+      // Clean up any remaining animations
+      activeAnimations.forEach(anim => {
+        anim.pause();
+        // Ensure animation is at its starting state
+        if (anim.progress) {
+          anim.seek(0);
+        }
+      });
+      activeAnimations.length = 0;
     };
   }, [iconAnimation, cardAnimation]);
 

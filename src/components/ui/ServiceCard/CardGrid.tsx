@@ -36,10 +36,12 @@ export function CardGrid({
   // Calculate grid classes based on variant and number of cards
   const gridClasses = cn(
     "grid grid-cols-1 md:grid-cols-2",
-    // For 3 or fewer cards, or when using floating variant with 3 cards
-    cards.length <= 3 || (variant === 'floating' && cards.length === 3)
-      ? `lg:grid-cols-${cards.length}` 
-      : `lg:grid-cols-${maxRowSize}` // Otherwise use the variant's max row size
+    // For lg breakpoint and up
+    variant === 'floating'
+      ? "lg:grid-cols-3" // Floating variant always shows 3 per row at lg
+      : cards.length <= maxRowSize
+        ? `lg:grid-cols-${cards.length}`
+        : `lg:grid-cols-${maxRowSize}`
   );
 
   return (

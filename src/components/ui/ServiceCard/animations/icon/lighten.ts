@@ -194,7 +194,22 @@ export const lighten: AnimationConfig = {
       // If no container, animate the background away
       return anime.timeline({
         easing: 'easeInQuad',
-        duration: 200
+        duration: 200,
+        complete: () => {
+          // Clean up created elements after animation
+          if (background) {
+            const wrapper = background.parentElement;
+            if (wrapper && wrapper.classList.contains('relative')) {
+              const parent = wrapper.parentElement;
+              if (parent) {
+                // Move the icon back to its original parent
+                parent.appendChild(icon);
+                // Remove the wrapper and background
+                wrapper.remove();
+              }
+            }
+          }
+        }
       })
       .add({
         targets: background,
