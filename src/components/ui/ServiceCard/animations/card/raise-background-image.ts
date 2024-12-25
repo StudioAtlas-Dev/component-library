@@ -10,7 +10,7 @@ export const raiseBackgroundImage: AnimationConfig = {
     let imageContainer = card.querySelector('.background-image-container') as HTMLElement;
     if (!imageContainer) {
       imageContainer = document.createElement('div');
-      imageContainer.className = 'background-image-container absolute inset-x-0 bottom-0 h-[100px] overflow-hidden pointer-events-none z-0';
+      imageContainer.className = 'background-image-container absolute inset-x-0 bottom-0 h-[100px] overflow-hidden pointer-events-none -z-[1]';
       card.insertBefore(imageContainer, card.firstChild);
 
       // Move the preloaded Next.js Image from its hidden container
@@ -45,19 +45,8 @@ export const raiseBackgroundImage: AnimationConfig = {
       observer.observe(card, { attributes: true, attributeFilter: ['style'] });
     }
 
-    // Ensure content is above the background
-    const content = card.querySelector('.service-card-content');
-    if (content instanceof HTMLElement) {
-      content.style.position = 'relative';
-      content.style.zIndex = '1';
-    }
-
-    // Ensure icon is above the background
-    const icon = card.querySelector('.service-card-icon-container');
-    if (icon instanceof HTMLElement) {
-      icon.style.position = 'relative';
-      icon.style.zIndex = '1';
-    }
+    // Remove the content and icon z-index modifications since we're using negative z-index for the background
+    // This ensures the icon and content stay at their original z-index levels
 
     // Animate the image rising
     const image = imageContainer.querySelector('img');

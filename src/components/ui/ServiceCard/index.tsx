@@ -72,11 +72,11 @@ function IconWrapper({
   return (
     <div className="relative w-8 h-8">
       <div 
-        className="absolute -inset-2 rounded-full service-card-icon-container"
+        className="absolute -inset-2 rounded-full service-card-icon-container z-[1]"
         style={{ backgroundColor: '#ffffff' }}
       />
       <Icon 
-        className="w-full h-full service-card-icon relative z-10" 
+        className="w-full h-full service-card-icon relative z-[2]" 
         style={{ color }}
         data-color={color}
         data-active-dark-color={activeDarkColor}

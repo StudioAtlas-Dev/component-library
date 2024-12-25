@@ -45,9 +45,11 @@ export function CardGrid({
     // For lg breakpoint and up
     variant === 'floating'
       ? "lg:grid-cols-3" // Floating variant always shows 3 per row at lg
-      : cards.length <= maxRowSize
-        ? `lg:grid-cols-${cards.length}`
-        : `lg:grid-cols-${maxRowSize}`
+      : {
+          'lg:grid-cols-2': cards.length === 2,
+          'lg:grid-cols-3': cards.length === 3,
+          'lg:grid-cols-4': cards.length >= 4
+        }
   );
 
   return (
@@ -80,13 +82,19 @@ export function CardGrid({
                       // Base borders
                       "border-b border-r border-neutral-200 dark:border-neutral-800",
                       // Handle right borders at breakpoints
-                      "md:[&:nth-child(2n)]:border-r-0",
+                      "md:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r",
                       // Handle borders based on max row size
-                      `lg:[&:nth-child(${maxRowSize}n)]:border-r-0`,
-                      // Handle bottom borders for complete rows
-                      cards.length <= maxRowSize
-                        ? `lg:[&:nth-child(-n+${cards.length})]:border-b-0`
-                        : `lg:[&:nth-child(n+${cards.length - (cards.length % maxRowSize || maxRowSize) + 1})]:border-b-0`
+                      {
+                        'lg:[&:nth-child(4n)]:border-r-0': maxRowSize === 4,
+                        'lg:[&:nth-child(3n)]:border-r-0': maxRowSize === 3,
+                        'lg:[&:nth-child(2n)]:border-r-0': maxRowSize === 2
+                      },
+                      // Handle bottom borders
+                      {
+                        'lg:[&:nth-child(n+5)]:border-b-0': cards.length <= 4,
+                        'lg:[&:nth-child(n+7)]:border-b-0': cards.length <= 6,
+                        'lg:[&:nth-child(n+9)]:border-b-0': cards.length <= 8
+                      }
                     ]
               )}
               popColor={popColor}
