@@ -18,6 +18,8 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",  // Uses base styles from Accordion component
+      bordered: "border-2 rounded-xl divide-y-2",  // Variants for testing for now
+      minimal: "divide-y",
     }
   },
   defaultVariants: {
