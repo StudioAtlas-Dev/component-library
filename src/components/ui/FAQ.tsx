@@ -15,9 +15,8 @@ import { cn } from "@/lib/utils"
 const tabsVariants = cva("", {
   variants: {
     variant: {
-      default: "",  // Uses base styles
-      bordered: "border rounded-xl overflow-hidden",
-      minimal: "bg-transparent",
+      default: "bg-transparent p-0",  // Override default shadcn styles
+      bordered: "bg-muted p-1 rounded-xl",
     }
   },
   defaultVariants: {
@@ -25,21 +24,10 @@ const tabsVariants = cva("", {
   }
 })
 
-// Define FAQ variants that control both tabs and accordion
-const faqVariants = cva("", {
-  variants: {
-    variant: {
-      default: "",  // Both use their default variants
-      bordered: "", // Both use bordered variants
-      minimal: "",  // Both use minimal variants
-    }
-  },
-  defaultVariants: {
-    variant: "default"
-  }
-})
-
-export type FaqVariant = NonNullable<VariantProps<typeof faqVariants>["variant"]>;
+// Available variants for the FAQ component
+// Add new variants here and they'll automatically be available in the demo
+export const FAQ_VARIANTS = ["default", "bordered"] as const;
+export type FaqVariant = typeof FAQ_VARIANTS[number];
 
 // FAQ data type definitions
 interface FaqQuestion {
@@ -63,33 +51,35 @@ interface FaqProps {
 }
 
 export function FAQ({ data, variant = "default", className }: FaqProps) {
-  // Map FAQ variant to component variants
-  const componentVariant = variant;
-
   return (
     <Tabs defaultValue={Object.keys(data)[0]} className={cn("w-full", className)}>
-      <TabsList 
-        className={cn(
-          "w-full justify-start mb-4 bg-transparent p-0 gap-2",
-          tabsVariants({ variant: componentVariant })
-        )}
-      >
-        {Object.entries(data).map(([key, { label }]) => (
-          <TabsTrigger
-            key={key}
-            value={key}
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-          >
-            {label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+      <div className="flex justify-center mb-4">
+        <TabsList 
+          className={cn(
+            "inline-flex items-center justify-center bg-transparent",
+            tabsVariants({ variant })
+          )}
+        >
+          {Object.entries(data).map(([key, { label }]) => (
+            <TabsTrigger
+              key={key}
+              value={key}
+              className={cn(
+                "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                variant === "default" && "rounded-md"
+              )}
+            >
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
 
       {Object.entries(data).map(([key, { questions }]) => (
         <TabsContent key={key} value={key}>
           <Accordion
             type="multiple"
-            variant={componentVariant}
+            variant={variant}
             className="space-y-2"
           >
             {questions.map((faq, index) => (

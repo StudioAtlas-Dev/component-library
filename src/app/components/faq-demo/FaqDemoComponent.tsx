@@ -7,7 +7,7 @@
 
 "use client";
 
-import { FAQ, type FaqData, type FaqVariant } from "@/components/ui/FAQ";
+import { FAQ, type FaqData, type FaqVariant, FAQ_VARIANTS } from "@/components/ui/FAQ";
 import { useState } from "react";
 
 // FAQ Categories and their questions
@@ -53,9 +53,6 @@ const faqData: FaqData = {
   }
 };
 
-// Available variants for the FAQ component
-const VARIANTS = ["default", "bordered", "minimal"] as const;
-
 export default function FaqDemoComponent() {
   const [variant, setVariant] = useState<FaqVariant>("default");
 
@@ -70,7 +67,7 @@ export default function FaqDemoComponent() {
             onChange={(e) => setVariant(e.target.value as FaqVariant)}
             className="border rounded px-2 py-1 text-sm"
           >
-            {VARIANTS.map((v) => (
+            {FAQ_VARIANTS.map((v) => (
               <option key={v} value={v}>
                 {v.charAt(0).toUpperCase() + v.slice(1)}
               </option>
