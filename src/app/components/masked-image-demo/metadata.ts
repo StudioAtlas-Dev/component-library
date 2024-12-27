@@ -5,6 +5,7 @@ export const metadata = {
   tags: ['demo', 'image', 'svg'],
   dateAdded: '2024-12-27',
   dependencies: [
-
+    "clsx",
+    "tailwind-merge"
   ]
 }; 
