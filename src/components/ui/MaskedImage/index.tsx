@@ -1,18 +1,20 @@
 import { MaskedImageProps } from './types';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export const MaskedImage = ({
   variant,
-  cornerDirection,
+  cornerDirection = '',
   color,
   src,
   alt,
   className = '',
+  imageClassName = '',
   width = 300,
-  height = 300,
   responsive = true
 }: MaskedImageProps) => {
   const maskId = `mask-${variant}-${cornerDirection}`;
+  const height = variant === 'oval' ? Math.round(width * 1.5) : width;
 
   const getBasePath = () => {
     if (variant === 'circle') {
@@ -21,15 +23,26 @@ export const MaskedImage = ({
       const cy = height / 2;
       return `M${cx} ${cy} m-${radius} 0 a${radius} ${radius} 0 1 0 ${radius*2} 0 a${radius} ${radius} 0 1 0 -${radius*2} 0`;
     } else {
-      const rx = width / 2;
-      const ry = height / 2;
-      const cx = width / 2;
-      const cy = height / 2;
-      return `M${cx} ${cy} m-${rx} 0 a${rx} ${ry} 0 1 0 ${rx*2} 0 a${rx} ${ry} 0 1 0 -${rx*2} 0`;
+      const radius = width / 2;
+      
+      // Create a path that combines the circles and rectangle without overlapping
+      return `
+        M0 ${radius}
+        A${radius} ${radius} 0 0 1 ${radius} 0
+        H${width - radius}
+        A${radius} ${radius} 0 0 1 ${width} ${radius}
+        V${height - radius}
+        A${radius} ${radius} 0 0 1 ${width - radius} ${height}
+        H${radius}
+        A${radius} ${radius} 0 0 1 0 ${height - radius}
+        Z
+      `.trim().replace(/\s+/g, ' ');
     }
   };
 
   const getCornerPath = () => {
+    if (!cornerDirection) return '';
+    
     const quadrantWidth = width / 2;
     const quadrantHeight = height / 2;
     
@@ -42,13 +55,12 @@ export const MaskedImage = ({
         return `M0 ${quadrantHeight}h${quadrantWidth}v${quadrantHeight}H0z`;
       case 'bottom-right':
         return `M${quadrantWidth} ${quadrantHeight}h${quadrantWidth}v${quadrantHeight}h-${quadrantWidth}z`;
+      default:
+        return '';
     }
   };
 
-  const containerClasses = [
-    'relative block',
-    className
-  ].filter(Boolean).join(' ');
+  const containerClasses = cn('relative block', className);
 
   return (
     <div 
@@ -69,7 +81,7 @@ export const MaskedImage = ({
           <mask id={maskId}>
             <rect width={width} height={height} fill="black" />
             <path d={getBasePath()} fill="white" />
-            <path d={getCornerPath()} fill="white" />
+            {cornerDirection && <path d={getCornerPath()} fill="white" />}
           </mask>
         </defs>
         <rect 
@@ -80,7 +92,7 @@ export const MaskedImage = ({
         />
       </svg>
 
-        <div 
+      <div 
         style={{ 
           position: 'absolute',
           top: 0,
@@ -91,14 +103,14 @@ export const MaskedImage = ({
           WebkitMask: `url(#${maskId})`
         }}
       >
-          <Image
-            src={src}
-            alt={alt}
-            fill
+        <Image
+          src={src}
+          alt={alt}
+          fill
           sizes={`(max-width: 640px) 100vw, ${width}px`}
-            className="object-cover"
-            priority
-          />
+          className={cn('object-cover', imageClassName)}
+          priority
+        />
       </div>
     </div>
   );

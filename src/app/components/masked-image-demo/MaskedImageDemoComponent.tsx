@@ -34,6 +34,7 @@ export function MaskedImageDemoComponent() {
             value={selectedCorner}
             onChange={(e) => setSelectedCorner(e.target.value as CornerDirection)}
           >
+            <option value="">None</option>
             <option value="top-left">Top Left</option>
             <option value="top-right">Top Right</option>
             <option value="bottom-left">Bottom Left</option>
@@ -62,7 +63,6 @@ export function MaskedImageDemoComponent() {
               src="/images/dog1.png"
               alt="Dog being held"
               width={300}
-              height={300}
             />
           </div>
         </div>
