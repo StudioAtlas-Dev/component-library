@@ -5,6 +5,9 @@ export const metadata = {
   tags: ['demo', 'faq', 'variants', 'animations', 'customizable'],
   dateAdded: '2024-12-25',
   dependencies: [
-
+    "clsx",
+    "tailwind-merge",
+    "lucide-react",
+    "class-variance-authority"
   ]
 }; 

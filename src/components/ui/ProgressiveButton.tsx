@@ -6,6 +6,7 @@ import { Button, buttonVariants } from './button';
 import { cn } from '@/lib/utils';
 import type { VariantProps } from 'class-variance-authority';
 import type { LinkProps } from 'next/link';
+import type { ButtonHoverEffect } from './button';
 
 /**
  * A progressively enhanced button component that gracefully upgrades from a basic link to an
@@ -37,19 +38,15 @@ import type { LinkProps } from 'next/link';
  * ```
  */
 
-type ButtonVariant = NonNullable<VariantProps<typeof buttonVariants>['variant']>
-type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>['size']>
-export type ButtonHoverEffect = 'none' | 'fill-in' | 'fill-up' | 'pulse' | 'slide' | 'reveal-arrow' | 'reveal-icon';
-
 interface ProgressiveButtonProps extends Omit<LinkProps, 'href'> {
   /** URL the button links to */
   href: string;
   /** Button content */
   children: React.ReactNode;
   /** Visual style variant */
-  variant?: ButtonVariant;
+  variant?: NonNullable<VariantProps<typeof buttonVariants>['variant']>;
   /** Button size preset */
-  size?: ButtonSize;
+  size?: NonNullable<VariantProps<typeof buttonVariants>['size']>;
   /** Additional CSS classes */
   className?: string;
   /** Inline styles (use sparingly, prefer className for all but background color) */
@@ -62,6 +59,8 @@ interface ProgressiveButtonProps extends Omit<LinkProps, 'href'> {
   target?: string;
   /** HTML rel attribute - automatically set when target="_blank" */
   rel?: string;
+  /** Custom icon for reveal-icon effect */
+  icon?: React.ReactNode;
 }
 
 export function ProgressiveButton({
@@ -75,6 +74,7 @@ export function ProgressiveButton({
   hoverColor = 'black',
   target,
   rel,
+  icon,
   ...props
 }: ProgressiveButtonProps) {
   // Track hydration state for progressive enhancement
@@ -114,6 +114,7 @@ export function ProgressiveButton({
       style={style}
       hoverEffect={hoverEffect}
       hoverColor={hoverColor}
+      icon={icon}
     >
       <Link 
         href={href}

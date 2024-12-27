@@ -53,8 +53,8 @@ const buttonVariants = cva(
         "fill-in": "relative",
         pulse: "",
         slide: "relative",
-        "reveal-arrow": "relative w-fit hover:bg-primary/90",
-        "reveal-icon": "relative w-fit hover:bg-primary/90"
+        "reveal-arrow": "relative w-fit",
+        "reveal-icon": "relative w-fit"
       },
     },
     defaultVariants: {
@@ -190,14 +190,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       // Handle mouse enter animation
       const mouseEnter = () => {
-        // Cancel any running animations to prevent conflicts
-        if (isAnimatingRef.current) animationRef.current?.pause()
-        isAnimatingRef.current = true
+        if (isAnimatingRef.current) animationRef.current?.pause();
+        isAnimatingRef.current = true;
 
         if (hoverEffect === 'reveal-arrow' || hoverEffect === 'reveal-icon') {
-          // Special handling for icon reveal effects
-          const textElement = element.querySelector('.button-text')
-          if (textElement) anime.set(textElement, { color: '#fff' })
+          const textElement = element.querySelector('.button-text');
           animationRef.current = anime.timeline({
             complete: () => { isAnimatingRef.current = false }
           })
@@ -212,16 +209,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               translateX: [0, '-10px'],
               duration: 200,
               easing: 'easeOutQuad'
-            }, '-=200')
+            }, '-=200');
         } else {
           // Standard hover effects
           animationRef.current = anime({
             targets: overlay,
             ...animations[hoverEffect as keyof typeof animations],
             complete: () => { isAnimatingRef.current = false }
-          })
+          });
         }
-      }
+      };
 
       // Handle mouse leave animation
       const mouseLeave = () => {

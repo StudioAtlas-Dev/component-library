@@ -27,7 +27,24 @@ const tabsVariants = cva("", {
 export const FAQ_VARIANTS = ["default", "bordered"] as const;
 export type FaqVariant = typeof FAQ_VARIANTS[number];
 
-// FAQ data type definitions
+/*
+  Example FAQ Data
+  const faqData: FaqData = {
+    general: {
+      label: "General Questions",
+      questions: [
+        {
+          question: "What services do you provide?",
+          answer: "We offer a comprehensive range of digital solutions including web development, UI/UX design, and software consulting. Our team specializes in creating modern, scalable applications tailored to your business needs."
+        },
+        {
+          question: "How long does a typical project take?",
+          answer: "Project timelines vary depending on complexity and scope. A simple website might take 4-6 weeks, while a complex application could take 3-6 months. We'll provide a detailed timeline during our initial consultation."
+        }
+      ]
+    },
+  }
+*/
 interface FaqQuestion {
   question: string;
   answer: string;
@@ -46,9 +63,11 @@ interface FaqProps {
   data: FaqData;
   variant?: FaqVariant;
   className?: string;
+  /** Color to use for active states and accents. Defaults to current text color. */
+  color?: string;
 }
 
-export function FAQ({ data, variant = "default", className }: FaqProps) {
+export function FAQ({ data, variant = "default", className, color }: FaqProps) {
   return (
     <Tabs defaultValue={Object.keys(data)[0]} className={cn("w-full", className)}>
       <div className="flex justify-center mb-4">

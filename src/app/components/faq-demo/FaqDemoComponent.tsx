@@ -9,6 +9,7 @@
 
 import { FAQ, type FaqData, type FaqVariant, FAQ_VARIANTS } from "@/components/ui/FAQ";
 import { useState } from "react";
+import SectionTitle from "@/components/ui/SectionTitle";
 
 // FAQ Categories and their questions
 const faqData: FaqData = {
@@ -57,10 +58,9 @@ export default function FaqDemoComponent() {
   const [variant, setVariant] = useState<FaqVariant>("default");
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8">
+    <div className="w-full max-w-4xl mx-auto px-4">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-        <div className="flex items-center gap-2">
+        <div className="justify-center flex items-center gap-2 mb-10">
           <span className="text-sm font-medium">Style Variant:</span>
           <select
             value={variant}
@@ -74,6 +74,12 @@ export default function FaqDemoComponent() {
             ))}
           </select>
         </div>
+        <SectionTitle
+        tagline="FAQ" 
+        title="Frequently Asked Questions" 
+        description="We hope to answer all your questions here, but if not, please contact us."
+        popColor="#2b2b2b"
+        />
       </div>
 
       <FAQ data={faqData} variant={variant} />
