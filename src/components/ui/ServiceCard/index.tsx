@@ -116,83 +116,83 @@ export function renderCard({
   const cardId = `card-title-${title.toLowerCase().replace(/\s+/g, '-')}`;
   
   return (
-    <div className="relative h-full" role="article">
-      {/* Hidden image preload for animation */}
-      {animationImage && (
-        <div className="hidden">
-          <Image
-            src={animationImage}
-            alt=""
-            className="w-full object-cover object-top"
-            fill
-            sizes="100vw"
-            priority={false}
-            quality={75}
-          />
-        </div>
+    <>
+      {/* Preload animation image */}
+      {animationImage && cardAnimation?.includes('raise-background-image') && (
+        <link 
+          rel="preload" 
+          href={animationImage} 
+          as="image" 
+          type="image/avif"
+        />
       )}
-      {/* Floating variant icon is outside the overflow hidden container */}
-      {variant === 'floating' && (
-        <div ref={refs.iconRef}>
-          {iconContent}
-        </div>
-      )}
-      {/* Main card content with overflow hidden */}
-      <div 
-        ref={refs.cardRef}
-        className={cn("service-card relative h-full overflow-hidden", className)}
-        aria-labelledby={cardId}
-        data-active-dark-color={activeDarkColor}
-        data-animation-image={animationImage}
-      >
-        <div>
-          {variant !== 'floating' && (
-            <div 
-              ref={refs.iconRef}
-              className="w-8 h-8 mb-4"
-              aria-hidden="true"
-            >
-              {iconContent}
-            </div>
-          )}
-          <div className={`service-card-content ${variant === 'floating' ? 'mt-4' : undefined}`}>
-            <h3 
-              id={cardId}
-              className={cn(
-                "font-semibold mb-3",
-                variant === 'floating' 
-                  ? "text-xl uppercase tracking-wide text-neutral-900 dark:text-neutral-100" 
-                  : "text-lg sm:text-xl text-neutral-900 dark:text-neutral-100"
-              )}
-            >
-              {title}
-            </h3>
-            <p className={cn(
-              "text-neutral-600 dark:text-neutral-400",
-              variant === 'floating' 
-                ? "text-base leading-relaxed"
-                : "text-sm sm:text-base leading-relaxed"
-            )}>
-              {description}
-            </p>
-            {children && (
-              <div className="mt-4">
-                {children}
+      <div className="relative h-full" role="article">
+        {/* Floating variant icon is outside the overflow hidden container */}
+        {variant === 'floating' && (
+          <div ref={refs.iconRef}>
+            {iconContent}
+          </div>
+        )}
+        {/* Main card content with overflow hidden */}
+        <div 
+          ref={refs.cardRef}
+          className={cn("service-card relative h-full overflow-hidden", className)}
+          aria-labelledby={cardId}
+          data-active-dark-color={activeDarkColor}
+          data-animation-image={animationImage}
+        >
+          <div>
+            {variant !== 'floating' && (
+              <div 
+                ref={refs.iconRef}
+                className="w-8 h-8 mb-4 relative z-1"
+                aria-hidden="true"
+              >
+                {iconContent}
               </div>
             )}
+            <div className={cn(
+              "service-card-content relative z-1",
+              variant === 'floating' ? "mt-4" : undefined
+            )}>
+              <h3 
+                id={cardId}
+                className={cn(
+                  "font-semibold mb-3",
+                  variant === 'floating' 
+                    ? "text-xl uppercase tracking-wide text-neutral-900 dark:text-neutral-100" 
+                    : "text-lg sm:text-xl text-neutral-900 dark:text-neutral-100"
+                )}
+              >
+                {title}
+              </h3>
+              <p className={cn(
+                "text-neutral-600 dark:text-neutral-400",
+                variant === 'floating' 
+                  ? "text-base leading-relaxed"
+                  : "text-sm sm:text-base leading-relaxed"
+              )}>
+                {description}
+              </p>
+              {children && (
+                <div className="mt-4">
+                  {children}
+                </div>
+              )}
+            </div>
           </div>
+          {/* Animation border overlay */}
+          {cardAnimation !== 'none' && (
+            <div 
+              ref={refs.borderRef}
+              className="absolute inset-0 pointer-events-none"
+              style={{ borderStyle: 'solid', borderWidth: 0, borderColor: 'transparent' }}
+              aria-hidden="true"
+            />
+          )}
         </div>
-        {/* Animation border overlay */}
-        {cardAnimation !== 'none' && (
-          <div 
-            ref={refs.borderRef}
-            className="absolute inset-0 pointer-events-none"
-            style={{ borderStyle: 'solid', borderWidth: 0, borderColor: 'transparent' }}
-            aria-hidden="true"
-          />
-        )}
       </div>
-    </div>
+    </>
   );
 }
 
