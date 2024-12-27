@@ -1,8 +1,5 @@
-'use client';
-
 import { MaskedImageProps } from './types';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
 
 export const MaskedImage = ({
   variant,
@@ -11,52 +8,30 @@ export const MaskedImage = ({
   src,
   alt,
   className = '',
-  width,
-  height,
+  width = 300,
+  height = 300,
   responsive = true
 }: MaskedImageProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerSize, setContainerSize] = useState({ width, height });
   const maskId = `mask-${variant}-${cornerDirection}`;
 
-  useEffect(() => {
-    if (!containerRef.current || !responsive) return;
-
-    const resizeObserver = new ResizeObserver(entries => {
-      const entry = entries[0];
-      if (entry) {
-        setContainerSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height
-        });
-      }
-    });
-
-    resizeObserver.observe(containerRef.current);
-    return () => resizeObserver.disconnect();
-  }, [responsive]);
-
   const getBasePath = () => {
-    const { width: w, height: h } = containerSize;
     if (variant === 'circle') {
-      const radius = Math.min(w, h) / 2;
-      const cx = w / 2;
-      const cy = h / 2;
+      const radius = width / 2;
+      const cx = width / 2;
+      const cy = height / 2;
       return `M${cx} ${cy} m-${radius} 0 a${radius} ${radius} 0 1 0 ${radius*2} 0 a${radius} ${radius} 0 1 0 -${radius*2} 0`;
     } else {
-      // Oval shape
-      const rx = w / 2;
-      const ry = h / 2;
-      const cx = w / 2;
-      const cy = h / 2;
+      const rx = width / 2;
+      const ry = height / 2;
+      const cx = width / 2;
+      const cy = height / 2;
       return `M${cx} ${cy} m-${rx} 0 a${rx} ${ry} 0 1 0 ${rx*2} 0 a${rx} ${ry} 0 1 0 -${rx*2} 0`;
     }
   };
 
   const getCornerPath = () => {
-    const { width: w, height: h } = containerSize;
-    const quadrantWidth = w / 2;
-    const quadrantHeight = h / 2;
+    const quadrantWidth = width / 2;
+    const quadrantHeight = height / 2;
     
     switch (cornerDirection) {
       case 'top-left':
@@ -71,48 +46,59 @@ export const MaskedImage = ({
   };
 
   const containerClasses = [
-    'relative',
-    responsive ? 'w-full max-w-[300px]' : '',
+    'relative block',
     className
   ].filter(Boolean).join(' ');
 
   return (
     <div 
-      ref={containerRef}
       className={containerClasses}
-      style={{ aspectRatio: `${width} / ${height}` }}
+      style={{ 
+        width: `${width}px`,
+        height: `${height}px`,
+        maxWidth: responsive ? '100%' : undefined
+      }}
     >
       <svg 
-        className="absolute inset-0 w-full h-full"
-        viewBox={`0 0 ${containerSize.width} ${containerSize.height}`}
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        style={{ position: 'absolute', top: 0, left: 0 }}
       >
         <defs>
           <mask id={maskId}>
-            <rect width={containerSize.width} height={containerSize.height} fill="black" />
+            <rect width={width} height={height} fill="black" />
             <path d={getBasePath()} fill="white" />
             <path d={getCornerPath()} fill="white" />
           </mask>
         </defs>
+        <rect 
+          width={width} 
+          height={height} 
+          fill={color} 
+          mask={`url(#${maskId})`}
+        />
       </svg>
 
-      {/* Background color and image with mask */}
-      <div 
-        className="absolute inset-0"
-        style={{ mask: `url(#${maskId})` }}
-      >
-        {/* Background color */}
         <div 
-          className="absolute inset-0"
-          style={{ backgroundColor: color }}
-        />
-        {/* Image */}
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes="(max-width: 640px) 100vw, 300px"
-          className="object-cover"
-        />
+        style={{ 
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          mask: `url(#${maskId})`,
+          WebkitMask: `url(#${maskId})`
+        }}
+      >
+          <Image
+            src={src}
+            alt={alt}
+            fill
+          sizes={`(max-width: 640px) 100vw, ${width}px`}
+            className="object-cover"
+            priority
+          />
       </div>
     </div>
   );
