@@ -1,5 +1,6 @@
-export type MaskedImageVariant = 'circle' | 'oval';
-export type CornerDirection = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | '';
+export type MaskedImageVariant = 'circle' | 'oval' | 'porthole';
+export type SingleCornerDirection = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export type CornerDirection = SingleCornerDirection | '' | `${SingleCornerDirection} ${SingleCornerDirection}` | `${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection}` | `${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection}`;
 
 export interface MaskedImageProps {
   variant: MaskedImageVariant;
