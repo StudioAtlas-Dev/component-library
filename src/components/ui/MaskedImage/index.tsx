@@ -21,7 +21,8 @@ export const MaskedImage = ({
   className = '',
   imageClassName = '',
   width = 300,
-  responsive = true
+  responsive = true,
+  rounded = 'none'
 }: MaskedImageProps) => {
   const corners = cornerDirection ? cornerDirection.split(' ') as SingleCornerDirection[] : [];
   const maskId = `mask-${variant}${corners.length ? '-' + corners.join('-') : ''}`;
@@ -40,6 +41,25 @@ export const MaskedImage = ({
   const shapeHeight = isPorthole
     ? Math.round(width * 0.6) // Flatter oval ratio
     : containerHeight;
+
+  // Map rounded size to Tailwind classes
+  const roundedClasses = {
+    'none': '',
+    'sm': 'rounded-sm',
+    'md': 'rounded',
+    'lg': 'rounded-lg',
+    'xl': 'rounded-xl',
+    '2xl': 'rounded-2xl',
+    '3xl': 'rounded-3xl',
+    'full': 'rounded-full'
+  };
+
+  const containerClasses = cn(
+    'relative block',
+    corners.length > 0 ? roundedClasses[rounded] : '',
+    'overflow-hidden',
+    className
+  );
 
   const getBasePath = (): GetBasePathResult => {
     if (variant === 'circle') {
@@ -130,7 +150,6 @@ export const MaskedImage = ({
     return typeof path !== 'string';
   };
 
-  const containerClasses = cn('relative block', className);
   const basePath = getBasePath();
 
   return (

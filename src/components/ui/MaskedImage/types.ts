@@ -4,6 +4,8 @@ export type CornerDirection = SingleCornerDirection | '' | `${SingleCornerDirect
 
 export type MaskedImageVariant = 'circle' | 'oval' | 'porthole-left' | 'porthole-right';
 
+export type RoundedSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
+
 export interface MaskedImageProps {
   variant: MaskedImageVariant;
   cornerDirection?: CornerDirection;
@@ -14,4 +16,5 @@ export interface MaskedImageProps {
   imageClassName?: string;
   width?: number;
   responsive?: boolean;
+  rounded?: RoundedSize;
 } 
