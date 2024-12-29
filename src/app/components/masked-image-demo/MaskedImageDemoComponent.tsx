@@ -14,7 +14,8 @@ const colors = [
 const variants: { label: string; value: MaskedImageVariant }[] = [
   { label: 'Circle', value: 'circle' },
   { label: 'Oval', value: 'oval' },
-  { label: 'Porthole', value: 'porthole' },
+  { label: 'Porthole (Left)', value: 'porthole-left' },
+  { label: 'Porthole (Right)', value: 'porthole-right' },
 ];
 
 const corners: SingleCornerDirection[] = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
@@ -34,9 +35,11 @@ export function MaskedImageDemoComponent() {
       <div className="flex flex-col gap-8 px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold tracking-tight">Masked Image Component</h2>
         
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Variant</label>
           <select
-            className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
+              className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
             value={selectedVariant}
             onChange={(e) => setSelectedVariant(e.target.value as MaskedImageVariant)}
           >
@@ -46,33 +49,42 @@ export function MaskedImageDemoComponent() {
               </option>
             ))}
           </select>
+          </div>
 
-          <select
-            className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
-            value={selectedCorners}
-            onChange={handleCornerChange}
-            multiple
-            size={5}
-          >
-            <option value="">None</option>
-            {corners.map((corner) => (
-              <option key={corner} value={corner}>
-                {corner.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-              </option>
-            ))}
-          </select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Corner Fill (Non-Porthole Variants Only)
+              </label>
+              <select
+                value={selectedCorners}
+                onChange={handleCornerChange}
+                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                multiple
+                size={5}
+              >
+                <option value="">None</option>
+                {corners.map((corner) => (
+                  <option key={corner} value={corner}>
+                    {corner.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select
-            className="px-3 py-1.5 border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900"
-            value={selectedColor}
-            onChange={(e) => setSelectedColor(e.target.value)}
-          >
-            {colors.map((color) => (
-              <option key={color.value} value={color.value}>
-                {color.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
+            <select
+              className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+              value={selectedColor}
+              onChange={(e) => setSelectedColor(e.target.value)}
+            >
+              {colors.map((color) => (
+                <option key={color.value} value={color.value}>
+                  {color.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
