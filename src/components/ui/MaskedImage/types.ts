@@ -2,7 +2,7 @@ export type SingleCornerDirection = 'top-left' | 'top-right' | 'bottom-left' | '
 
 export type CornerDirection = SingleCornerDirection | '' | `${SingleCornerDirection} ${SingleCornerDirection}` | `${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection}` | `${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection} ${SingleCornerDirection}`;
 
-export type MaskedImageVariant = 'circle' | 'oval' | 'porthole-left' | 'porthole-right';
+export type MaskedImageVariant = 'circle' | 'oval';
 
 export type RoundedSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
 
