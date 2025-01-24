@@ -61,8 +61,12 @@ export function MaskedImageDemoComponent() {
     try {
       const canvas = document.createElement('canvas');
       const component = componentRef.current;
-      const { width, height } = component.getBoundingClientRect();
-
+      const { width: componentWidth } = component.getBoundingClientRect();
+      
+      // Set canvas dimensions based on variant
+      const width = componentWidth;
+      const height = selectedVariant === 'oval' ? width * 2 : width;
+      
       canvas.width = width;
       canvas.height = height;
 
@@ -102,53 +106,7 @@ export function MaskedImageDemoComponent() {
       if (maskUrl) {
         ctx.save();
 
-        // Get the actual <mask> element in the DOM
-        const maskElement = document.querySelector(maskUrl) as SVGMaskElement;
-        const maskPaths = maskElement?.querySelectorAll('path');
-
-        if (maskPaths && maskPaths.length > 0) {
-          // Create a temporary canvas for path composition
-          const tempCanvas = document.createElement('canvas');
-          tempCanvas.width = width;
-          tempCanvas.height = height;
-          const tempCtx = tempCanvas.getContext('2d')!;
-
-          // Fill with black (masked area)
-          tempCtx.fillStyle = 'black';
-          tempCtx.fillRect(0, 0, width, height);
-
-          // Set compositing to source-over for additive masking
-          tempCtx.globalCompositeOperation = 'source-over';
-          tempCtx.fillStyle = 'white';
-
-          // Draw all mask paths in white
-          maskPaths.forEach((path) => {
-            const pathData = path.getAttribute('d');
-            if (pathData) {
-              const currentPath = new Path2D(pathData);
-              tempCtx.fill(currentPath);
-            }
-          });
-
-          // Use the temporary canvas as a clip path
-          const imageData = tempCtx.getImageData(0, 0, width, height);
-          const path = new Path2D();
-          
-          // Create a path from the non-black pixels
-          for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-              const idx = (y * width + x) * 4;
-              if (imageData.data[idx] > 0) { // If pixel is not black
-                path.rect(x, y, 1, 1);
-              }
-            }
-          }
-
-          // Use the combined path for clipping
-          ctx.clip(path);
-        }
-
-        // Draw the masked image with object-cover logic
+        // Draw the masked image with object-cover logic first
         const imgAspectRatio = maskedImg.width / maskedImg.height;
         const containerAspectRatio = width / height;
         let drawWidth = width;
@@ -167,6 +125,233 @@ export function MaskedImageDemoComponent() {
         }
 
         ctx.drawImage(maskedImg, offsetX, offsetY, drawWidth, drawHeight);
+
+        // Now apply the clipping mask
+        if (selectedVariant === 'oval') {
+          // Create a temporary canvas for constructing the mask
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = width;
+          tempCanvas.height = height;
+          const tempCtx = tempCanvas.getContext('2d')!;
+
+          // Draw the oval shape in white
+          tempCtx.fillStyle = 'white';
+          tempCtx.beginPath();
+          const radiusX = width / 2;
+          const radiusY = radiusX;
+          const c = radiusX * 0.552284749831;
+          const centerX = width / 2;
+          
+          // Top center
+          tempCtx.moveTo(centerX, 0);
+          // Top right curve
+          tempCtx.bezierCurveTo(
+            centerX + c, 0,
+            width, radiusY - c,
+            width, radiusY
+          );
+          // Right line
+          tempCtx.lineTo(width, height - radiusY);
+          // Bottom right curve
+          tempCtx.bezierCurveTo(
+            width, height - radiusY + c,
+            centerX + c, height,
+            centerX, height
+          );
+          // Bottom left curve
+          tempCtx.bezierCurveTo(
+            centerX - c, height,
+            0, height - radiusY + c,
+            0, height - radiusY
+          );
+          // Left line
+          tempCtx.lineTo(0, radiusY);
+          // Top left curve
+          tempCtx.bezierCurveTo(
+            0, radiusY - c,
+            centerX - c, 0,
+            centerX, 0
+          );
+          tempCtx.closePath();
+          tempCtx.fill();
+
+          // Add corner fills if any are selected
+          if (selectedCorners.length > 0) {
+            // Map rounded size to pixel values
+            const roundedSizeMap = {
+              'none': 0,
+              'sm': 2,
+              'md': 4,
+              'lg': 8,
+              'xl': 12,
+              '2xl': 16,
+              '3xl': 24,
+              'full': Math.min(width, height) / 2
+            };
+            
+            const cornerRadius = roundedSizeMap[selectedRounded];
+            
+            // Draw corner rectangles with rounded corners
+            selectedCorners.forEach(corner => {
+              tempCtx.beginPath();
+              const quadrantWidth = width / 2;
+              const quadrantHeight = height / 2;
+              
+              switch (corner) {
+                case 'top-left':
+                  if (cornerRadius > 0) {
+                    tempCtx.moveTo(0, cornerRadius);
+                    tempCtx.arcTo(0, 0, cornerRadius, 0, cornerRadius);
+                    tempCtx.lineTo(quadrantWidth, 0);
+                    tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                    tempCtx.lineTo(0, quadrantHeight);
+                  } else {
+                    tempCtx.rect(0, 0, quadrantWidth, quadrantHeight);
+                  }
+                  break;
+                case 'top-right':
+                  if (cornerRadius > 0) {
+                    tempCtx.moveTo(width - cornerRadius, 0);
+                    tempCtx.arcTo(width, 0, width, cornerRadius, cornerRadius);
+                    tempCtx.lineTo(width, quadrantHeight);
+                    tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                    tempCtx.lineTo(quadrantWidth, 0);
+                  } else {
+                    tempCtx.rect(quadrantWidth, 0, quadrantWidth, quadrantHeight);
+                  }
+                  break;
+                case 'bottom-left':
+                  if (cornerRadius > 0) {
+                    tempCtx.moveTo(0, height - cornerRadius);
+                    tempCtx.arcTo(0, height, cornerRadius, height, cornerRadius);
+                    tempCtx.lineTo(quadrantWidth, height);
+                    tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                    tempCtx.lineTo(0, quadrantHeight);
+                  } else {
+                    tempCtx.rect(0, quadrantHeight, quadrantWidth, quadrantHeight);
+                  }
+                  break;
+                case 'bottom-right':
+                  if (cornerRadius > 0) {
+                    tempCtx.moveTo(width - cornerRadius, height);
+                    tempCtx.arcTo(width, height, width, height - cornerRadius, cornerRadius);
+                    tempCtx.lineTo(width, quadrantHeight);
+                    tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                    tempCtx.lineTo(quadrantWidth, height);
+                  } else {
+                    tempCtx.rect(quadrantWidth, quadrantHeight, quadrantWidth, quadrantHeight);
+                  }
+                  break;
+              }
+              tempCtx.closePath();
+              tempCtx.fill();
+            });
+          }
+
+          // Apply the final mask to the main canvas
+          ctx.globalCompositeOperation = 'destination-in';
+          ctx.drawImage(tempCanvas, 0, 0);
+        } else {
+          // Use existing path for circle and other variants
+          const maskElement = document.querySelector(maskUrl) as SVGMaskElement;
+          const maskPaths = maskElement?.querySelectorAll('path');
+          
+          if (maskPaths && maskPaths.length > 0) {
+            // Create a temporary canvas for the mask
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d')!;
+
+            // Draw all mask paths in white
+            tempCtx.fillStyle = 'white';
+            maskPaths.forEach((path) => {
+              const pathData = path.getAttribute('d');
+              if (pathData) {
+                const currentPath = new Path2D(pathData);
+                tempCtx.fill(currentPath);
+              }
+            });
+
+            // Add corner fills with rounding if any are selected
+            if (selectedCorners.length > 0) {
+              // Map rounded size to pixel values
+              const roundedSizeMap = {
+                'none': 0,
+                'sm': 2,
+                'md': 4,
+                'lg': 8,
+                'xl': 12,
+                '2xl': 16,
+                '3xl': 24,
+                'full': Math.min(width, height) / 2
+              };
+              
+              const cornerRadius = roundedSizeMap[selectedRounded];
+              
+              // Draw corner rectangles with rounded corners
+              selectedCorners.forEach(corner => {
+                tempCtx.beginPath();
+                const quadrantWidth = width / 2;
+                const quadrantHeight = height / 2;
+                
+                switch (corner) {
+                  case 'top-left':
+                    if (cornerRadius > 0) {
+                      tempCtx.moveTo(0, cornerRadius);
+                      tempCtx.arcTo(0, 0, cornerRadius, 0, cornerRadius);
+                      tempCtx.lineTo(quadrantWidth, 0);
+                      tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                      tempCtx.lineTo(0, quadrantHeight);
+                    } else {
+                      tempCtx.rect(0, 0, quadrantWidth, quadrantHeight);
+                    }
+                    break;
+                  case 'top-right':
+                    if (cornerRadius > 0) {
+                      tempCtx.moveTo(width - cornerRadius, 0);
+                      tempCtx.arcTo(width, 0, width, cornerRadius, cornerRadius);
+                      tempCtx.lineTo(width, quadrantHeight);
+                      tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                      tempCtx.lineTo(quadrantWidth, 0);
+                    } else {
+                      tempCtx.rect(quadrantWidth, 0, quadrantWidth, quadrantHeight);
+                    }
+                    break;
+                  case 'bottom-left':
+                    if (cornerRadius > 0) {
+                      tempCtx.moveTo(0, height - cornerRadius);
+                      tempCtx.arcTo(0, height, cornerRadius, height, cornerRadius);
+                      tempCtx.lineTo(quadrantWidth, height);
+                      tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                      tempCtx.lineTo(0, quadrantHeight);
+                    } else {
+                      tempCtx.rect(0, quadrantHeight, quadrantWidth, quadrantHeight);
+                    }
+                    break;
+                  case 'bottom-right':
+                    if (cornerRadius > 0) {
+                      tempCtx.moveTo(width - cornerRadius, height);
+                      tempCtx.arcTo(width, height, width, height - cornerRadius, cornerRadius);
+                      tempCtx.lineTo(width, quadrantHeight);
+                      tempCtx.lineTo(quadrantWidth, quadrantHeight);
+                      tempCtx.lineTo(quadrantWidth, height);
+                    } else {
+                      tempCtx.rect(quadrantWidth, quadrantHeight, quadrantWidth, quadrantHeight);
+                    }
+                    break;
+                }
+                tempCtx.closePath();
+                tempCtx.fill();
+              });
+            }
+
+            // Apply the mask to the main canvas
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.drawImage(tempCanvas, 0, 0);
+          }
+        }
+        
         ctx.restore();
       }
 
@@ -304,7 +489,7 @@ export function MaskedImageDemoComponent() {
               color={selectedColor}
               src={uploadedImage}
               alt="Masked image"
-              width={300}
+              width={600}
               rounded={selectedRounded}
             />
           </div>
