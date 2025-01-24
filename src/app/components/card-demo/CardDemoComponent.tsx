@@ -5,13 +5,11 @@ const cards = [
         title: "Gym Training",
         description: "Professional training programs to help you achieve your fitness goals.",
         imageUrl: "/images/gym-hero.jpg",
-        href: "/components/gym-hero-section"
     },
     {
         title: "Personal Training",
         description: "One-on-one sessions with expert trainers for personalized guidance.",
         imageUrl: "/images/gym-instructor.jpg",
-        href: "/components/personal-training"
     },
     {
         title: "Join Our Community",
@@ -22,7 +20,6 @@ const cards = [
         title: "Design Excellence",
         description: "Create stunning visuals that capture attention and inspire.",
         imageUrl: "/images/design-hero.jpg",
-        href: "/components/design-section"
     }
 ];
 
@@ -37,7 +34,6 @@ export default function CardDemoComponent() {
                             title={card.title}
                             description={card.description}
                             imageUrl={card.imageUrl}
-                            href={card.href}
                         />
                     ))}
                 </div>
