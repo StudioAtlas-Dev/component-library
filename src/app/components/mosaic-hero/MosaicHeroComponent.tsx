@@ -1,6 +1,8 @@
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 import SectionTitle from '@/components/ui/SectionTitle';
 import Image from 'next/image';
+import { FaLocationArrow } from "react-icons/fa";
+
 
 interface MosaicHeroProps {
   tagline?: string;
@@ -54,7 +56,8 @@ export default function MosaicHeroComponent({
                 size="lg"
                 className="rounded-md w-fit"
                 style={{ backgroundColor: popColor }}
-                hoverEffect="reveal-arrow"
+                hoverEffect="reveal-icon"
+                icon={<FaLocationArrow />}
               >
                 {primaryButtonText}
               </ProgressiveButton>
@@ -64,7 +67,9 @@ export default function MosaicHeroComponent({
                 variant="outline"
                 size="lg"
                 className="rounded-md w-fit"
-                hoverEffect="reveal-arrow"
+                hoverEffect="reveal-icon"
+                icon={<FaLocationArrow />}
+                iconColor="#ffffff"
               >
                 {secondaryButtonText}
               </ProgressiveButton>

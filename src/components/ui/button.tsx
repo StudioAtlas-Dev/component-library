@@ -78,6 +78,8 @@ export interface ButtonProps
   icon?: React.ReactNode
   /** Color for hover animation overlay */
   hoverColor?: string
+  /** Color for the icon (defaults to current text color) */
+  iconColor?: string
 }
 
 /**
@@ -289,7 +291,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
               style={{ backgroundColor: hoverColor }}
             >
-              <GoArrowUpRight className="w-4 h-4 text-white" />
+              <GoArrowUpRight className={cn("w-4 h-4", !props.iconColor && "text-white")} style={props.iconColor ? { color: props.iconColor } : undefined} />
             </div>
           )}
           {hoverEffect === 'reveal-icon' && Icon && (
@@ -298,7 +300,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
               style={{ backgroundColor: hoverColor }}
             >
-              {Icon}
+              {React.isValidElement(Icon) && props.iconColor
+                ? React.cloneElement(Icon as React.ReactElement, {
+                    className: (Icon as React.ReactElement).props.className,
+                    style: { ...(Icon as React.ReactElement).props.style, color: props.iconColor }
+                  })
+                : Icon}
             </div>
           )}
           {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && hoverEffect !== 'reveal-icon' && (
@@ -340,7 +347,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
                 style={{ backgroundColor: hoverColor }}
               >
-                <GoArrowUpRight className="w-4 h-4 text-white" />
+                <GoArrowUpRight className={cn("w-4 h-4", !props.iconColor && "text-white")} style={props.iconColor ? { color: props.iconColor } : undefined} />
               </div>
             )}
             {hoverEffect === 'reveal-icon' && Icon && (
@@ -349,7 +356,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 className="absolute top-0 right-0 h-full w-[32px] flex items-center justify-center transform translate-x-[32px]"
                 style={{ backgroundColor: hoverColor }}
               >
-                {Icon}
+                {React.isValidElement(Icon) && props.iconColor
+                  ? React.cloneElement(Icon as React.ReactElement, {
+                      className: (Icon as React.ReactElement).props.className,
+                      style: { ...(Icon as React.ReactElement).props.style, color: props.iconColor }
+                    })
+                  : Icon}
               </div>
             )}
             {hoverEffect !== 'none' && hoverEffect !== 'reveal-arrow' && hoverEffect !== 'reveal-icon' && (

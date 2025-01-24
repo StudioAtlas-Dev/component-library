@@ -61,6 +61,8 @@ interface ProgressiveButtonProps extends Omit<LinkProps, 'href'> {
   rel?: string;
   /** Custom icon for reveal-icon effect */
   icon?: React.ReactNode;
+  /** Color for the icon (defaults to current text color) */
+  iconColor?: string;
 }
 
 export function ProgressiveButton({
@@ -75,6 +77,7 @@ export function ProgressiveButton({
   target,
   rel,
   icon,
+  iconColor,
   ...props
 }: ProgressiveButtonProps) {
   // Track hydration state for progressive enhancement
@@ -115,6 +118,7 @@ export function ProgressiveButton({
       hoverEffect={hoverEffect}
       hoverColor={hoverColor}
       icon={icon}
+      iconColor={iconColor}
     >
       <Link 
         href={href}
