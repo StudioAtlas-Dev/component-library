@@ -38,9 +38,12 @@ export default function SectionTitle({
           className={cn(
             'inline-block text-sm font-semibold tracking-wider uppercase mb-4',
             alignLeft && 'lg:mx-0',
+            typeof popColor === 'string' && !popColor.startsWith('#') && `text-${popColor}`,
             taglineClassName
           )}
-          style={{ color: popColor }}
+          style={typeof popColor === 'string' && popColor.startsWith('#')
+            ? { color: popColor }
+            : undefined}
         >
           {tagline}
         </span>
@@ -60,7 +63,7 @@ export default function SectionTitle({
         <p
           className={cn(
             'mt-4 text-lg',
-            dark ? 'text-[#E6E6E6]' : 'text-neutral-600 dark:text-neutral-400',
+            dark ? 'text-[#E6E6E6]' : 'text-neutral-800 dark:text-neutral-400',
             alignLeft && 'lg:mx-0',
             descriptionClassName
           )}
