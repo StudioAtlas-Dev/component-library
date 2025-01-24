@@ -107,18 +107,45 @@ export function MaskedImageDemoComponent() {
         const maskPaths = maskElement?.querySelectorAll('path');
 
         if (maskPaths && maskPaths.length > 0) {
-          // Create a combined path from all paths
-          const combinedPath = new Path2D();
+          // Create a temporary canvas for path composition
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = width;
+          tempCanvas.height = height;
+          const tempCtx = tempCanvas.getContext('2d')!;
+
+          // Fill with black (masked area)
+          tempCtx.fillStyle = 'black';
+          tempCtx.fillRect(0, 0, width, height);
+
+          // Set compositing to source-over for additive masking
+          tempCtx.globalCompositeOperation = 'source-over';
+          tempCtx.fillStyle = 'white';
+
+          // Draw all mask paths in white
           maskPaths.forEach((path) => {
             const pathData = path.getAttribute('d');
             if (pathData) {
               const currentPath = new Path2D(pathData);
-              combinedPath.addPath(currentPath);
+              tempCtx.fill(currentPath);
             }
           });
 
-          // Clip by the combined path
-          ctx.clip(combinedPath);
+          // Use the temporary canvas as a clip path
+          const imageData = tempCtx.getImageData(0, 0, width, height);
+          const path = new Path2D();
+          
+          // Create a path from the non-black pixels
+          for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+              const idx = (y * width + x) * 4;
+              if (imageData.data[idx] > 0) { // If pixel is not black
+                path.rect(x, y, 1, 1);
+              }
+            }
+          }
+
+          // Use the combined path for clipping
+          ctx.clip(path);
         }
 
         // Draw the masked image with object-cover logic
