@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import anime from 'animejs';
 
 interface StarrySkyProps {
@@ -27,94 +27,126 @@ interface StarrySkyProps {
   starClassName?: string;
 }
 
+interface Star {
+  x: number;
+  y: number;
+  brightness: number;
+  twinkleSpeed: number;
+  phase: number;
+  shouldTwinkle: boolean;
+}
+
 export default function StarrySkyComponent({
-  angleVariance = 45,
+  angleVariance = 60,
   starCount = 100,
   shootingStarDuration = 4000,
   shootingStarDelay = 2000,
-  starColor = '#FFFFFF',
   starSize = 2,
   shootingStarSize = 3,
   showShootingStars = true,
-  twinkleProbability = 0.7,
+  twinkleProbability = 0.9,
   backgroundClassName = '',
-  starClassName = '',
 }: StarrySkyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
-
-  // This ref ensures we only animate one star at a time.
+  const starsRef = useRef<Star[]>([]);
+  const animationFrameRef = useRef<number | null>(null);
   const isAnimatingRef = useRef(false);
+
+  // Initialize stars
+  const initStars = useCallback(() => {
+    starsRef.current = Array.from({ length: starCount }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      brightness: 0.3 + Math.random() * 0.7,
+      twinkleSpeed: 1.0 + Math.random() * 1.0,
+      phase: Math.random() * Math.PI * 2,
+      shouldTwinkle: Math.random() < twinkleProbability
+    }));
+  }, [starCount, twinkleProbability]);
+
+  // Render stars on canvas
+  const renderStars = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    starsRef.current.forEach((star) => {
+      const time = performance.now() / 1000;
+      const twinkle = star.shouldTwinkle ? Math.sin(star.phase + time * star.twinkleSpeed) : 1;
+      const opacity = star.brightness * (0.5 + 0.5 * twinkle);
+
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+      ctx.arc(star.x, star.y, starSize, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    animationFrameRef.current = requestAnimationFrame(renderStars);
+  }, [starSize]);
+
+  // Handle resize
+  const handleResize = useCallback(() => {
+    if (canvasRef.current && containerRef.current) {
+      canvasRef.current.width = window.innerWidth;
+      canvasRef.current.height = window.innerHeight;
+      initStars();
+    }
+  }, [initStars]);
+
+  // Initialize shooting stars
+  const initShootingStars = useCallback(() => {
+    if (!svgRef.current || !showShootingStars) return;
+    
+    // Clear any existing defs
+    const existingDefs = svgRef.current.querySelector('defs');
+    if (existingDefs) {
+      existingDefs.remove();
+    }
+
+    // Create fresh defs element
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svgRef.current.appendChild(defs);
+
+    // Start the shooting star animation
+    if (!isAnimatingRef.current) {
+      setTimeout(() => launchShootingStar(), 1000);
+    }
+  }, [showShootingStars]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Clear the container
-    containerRef.current.innerHTML = '';
+    // Setup canvas
+    const canvas = document.createElement('canvas');
+    canvas.className = 'absolute inset-0 w-full h-full';
+    containerRef.current.appendChild(canvas);
+    canvasRef.current = canvas;
 
-    // Create SVG for the shooting star
+    // Setup SVG for shooting stars
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('class', 'absolute inset-0 w-full h-full');
+    svg.setAttribute('class', 'absolute inset-0 w-full h-full pointer-events-none');
     containerRef.current.appendChild(svg);
     svgRef.current = svg;
 
-    // Create defs for gradient
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    svg.appendChild(defs);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    renderStars();
+    initShootingStars();
 
-    // Create background stars
-    for (let i = 0; i < starCount; i++) {
-      const star = document.createElement('div');
-      star.className = `absolute rounded-full ${starClassName}`;
-      star.style.width = `${starSize}px`;
-      star.style.height = `${starSize}px`;
-      star.style.backgroundColor = starColor;
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.top = `${Math.random() * 100}%`;
-      containerRef.current.appendChild(star);
-
-      // All stars twinkle, but with varying intensities based on probability
-      const intensity = 0.3 + (Math.random() * 0.7 * twinkleProbability); // minimum 0.3 opacity variation
-      anime({
-        targets: star,
-        opacity: [
-          { value: intensity, duration: 800, easing: 'easeInOutQuad' },
-          { value: 1, duration: 800, easing: 'easeInOutQuad' }
-        ],
-        scale: [
-          { value: 0.8 + (intensity * 0.2), duration: 800, easing: 'easeInOutQuad' },
-          { value: 1, duration: 800, easing: 'easeInOutQuad' }
-        ],
-        loop: true,
-        delay: Math.random() * 1000
-      });
-    }
-
-    // If user doesn't want shooting stars, exit
-    if (!showShootingStars) return;
-
-    // Kick off the first star after 1 second
-    const initialTimeout = setTimeout(() => launchShootingStar(), 1000);
-
-    // Cleanup on unmount
     return () => {
-      clearTimeout(initialTimeout);
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       if (svgRef.current) {
         anime.remove(svgRef.current.children);
       }
     };
-  }, [
-    angleVariance,
-    starCount,
-    shootingStarDuration,
-    shootingStarDelay,
-    starColor,
-    starSize,
-    shootingStarSize,
-    showShootingStars,
-    twinkleProbability,
-    starClassName
-  ]);
+  }, [handleResize, renderStars, initShootingStars]);
 
   // Launch one star (if not already animating),
   // then when it finishes, schedule the next star.
@@ -123,71 +155,70 @@ export default function StarrySkyComponent({
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
 
-    // Our base angle is "straight down" = 90 degrees.
-    // We randomly add or subtract up to angleVariance, but avoid the 15° dead zone
-    const deadZone = 15; // degrees to avoid on either side of straight down
+    const deadZone = 15;
     const availableRange = angleVariance - deadZone;
     
-    // Generate random angle in the allowed range (either -angleVariance..-deadZone or deadZone..angleVariance)
     const rand = (Math.random() > 0.5)
-        ? Math.random() * availableRange + deadZone // positive side
-        : -(Math.random() * availableRange + deadZone); // negative side
+        ? Math.random() * availableRange + deadZone
+        : -(Math.random() * availableRange + deadZone);
     
-    const finalAngle = 90 + rand; // e.g. between 45..75 or 105..135 for angleVariance=45
+    const finalAngle = 90 + rand;
     const radians = (finalAngle * Math.PI) / 180;
 
-    // Create a linearGradient
-    const gradientId = 'shooting-star-gradient';
+    // Create a unique gradient ID for each shooting star
+    const gradientId = `shooting-star-gradient-${Date.now()}`;
+    
+    // Create gradient element
     const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
     gradient.id = gradientId;
-    // By default, gradientUnits="objectBoundingBox", so it's left→right in local coords
-    gradient.setAttribute('x1', '100%');  // Start at right
+    gradient.setAttribute('x1', '100%');
     gradient.setAttribute('y1', '50%');
-    gradient.setAttribute('x2', '0%');    // End at left
+    gradient.setAttribute('x2', '0%');
     gradient.setAttribute('y2', '50%');
 
-    // Color stops
     const stops = [
       { offset: '0%', color: '#9E00FF', opacity: 1 },
       { offset: '20%', color: '#9E00FF', opacity: 0.8 },
       { offset: '60%', color: '#2EB9DF', opacity: 0.5 },
       { offset: '100%', color: '#2EB9DF', opacity: 0 }
     ];
+
     stops.forEach(({ offset, color, opacity }) => {
       const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
       stop.setAttribute('offset', offset);
       stop.setAttribute('style', `stop-color: ${color}; stop-opacity: ${opacity}`);
       gradient.appendChild(stop);
     });
-    svgRef.current.querySelector('defs')?.appendChild(gradient);
 
-    // Start near top
+    // Get or create defs element
+    let defs = svgRef.current.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      svgRef.current.appendChild(defs);
+    }
+    defs.appendChild(gradient);
+
+    // Calculate start and end positions
     const startX = Math.random() * window.innerWidth;
-    const startY = -50; // slightly above the viewport
-
-    // End far off screen
+    const startY = -50;
     const travelDistance = Math.max(window.innerWidth, window.innerHeight) * 2;
     const endX = startX + Math.cos(radians) * travelDistance;
     const endY = startY + Math.sin(radians) * travelDistance;
 
-    // Create the rect
-    // It's wide horizontally in local coords. Rotating it will angle the tail.
+    // Create and configure the shooting star rectangle
     const starRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     starRect.setAttribute('width', String(shootingStarSize * 40));
     starRect.setAttribute('height', String(shootingStarSize));
     starRect.setAttribute('fill', `url(#${gradientId})`);
     starRect.style.opacity = '0';
-
-    // Position it at (startX, startY), and rotate about that corner
     starRect.setAttribute(
       'transform',
-      `translate(${startX}, ${startY})
-       rotate(${finalAngle}, 0, 0)`
+      `translate(${startX}, ${startY}) rotate(${finalAngle}, 0, 0)`
     );
 
     svgRef.current.appendChild(starRect);
 
-    // Animate
+    // Animate the shooting star
     anime({
       targets: starRect,
       easing: 'linear',
@@ -199,30 +230,20 @@ export default function StarrySkyComponent({
         { value: 0, duration: shootingStarDuration * 0.1 }
       ],
       update: anim => {
-        const progress = anim.progress / 100; // 0..1
+        const progress = anim.progress / 100;
         const currentX = startX + (endX - startX) * progress;
         const currentY = startY + (endY - startY) * progress;
-
-        // lengthen the tail from 40 up to 160
         const newWidth = shootingStarSize * (40 + 120 * progress);
         starRect.setAttribute('width', String(newWidth));
-
-        // Reapply transform with updated translation:
         starRect.setAttribute(
           'transform',
-          `translate(${currentX}, ${currentY})
-           rotate(${finalAngle}, 0, 0)`
+          `translate(${currentX}, ${currentY}) rotate(${finalAngle}, 0, 0)`
         );
       },
       complete: () => {
-        // Remove from DOM
         starRect.remove();
-        svgRef.current?.querySelector(`#${gradientId}`)?.remove();
-
-        // Done animating, allow next star
+        gradient.remove();
         isAnimatingRef.current = false;
-
-        // Spawn next star after a delay
         setTimeout(() => launchShootingStar(), shootingStarDelay);
       }
     });
