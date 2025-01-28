@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { ComponentMeta } from '@/types/component';
 
 // Extend ComponentMeta to include dependencies

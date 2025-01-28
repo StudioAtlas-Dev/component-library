@@ -1,4 +1,4 @@
-import { ComponentType, SortOption } from '@/types/component';
+import { SortOption } from '@/types/component';
 
 interface FilterBarProps {
   search: string;

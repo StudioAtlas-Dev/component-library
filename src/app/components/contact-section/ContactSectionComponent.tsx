@@ -1,7 +1,7 @@
 import SectionTitle from '@/components/ui/SectionTitle';
 import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 import { MdEmail, MdChat, MdPhone, MdLocationOn } from 'react-icons/md';
-import { ButtonHoverEffect } from '@/components/ui/ProgressiveButton';
+import { ButtonHoverEffect } from '@/components/ui/button';
 
 interface ContactSectionProps {
     backgroundColor?: string;

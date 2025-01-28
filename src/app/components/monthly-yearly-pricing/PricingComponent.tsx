@@ -6,9 +6,6 @@ import { ProgressiveButton } from '@/components/ui/ProgressiveButton';
 import PricingToggle from './PricingToggle';
 import { useState } from 'react';
 
-interface PlanFeature {
-  text: string;
-}
 
 interface PricingPlan {
   name: string;
@@ -118,7 +115,7 @@ export default function PricingComponent({
                     role="list"
                     aria-label="Available pricing plans"
                 >
-                    {plans.map((plan, index) => (
+                    {plans.map((plan) => (
                         <div
                             key={plan.name}
                             className="relative bg-white rounded-md border border-gray-900 p-8 lg:p-10 flex flex-col"

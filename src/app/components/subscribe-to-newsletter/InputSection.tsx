@@ -145,6 +145,7 @@ export const InputSection = ({
       }
     } catch (err) {
       showToast('An error occurred. Please try again later.', 'error');
+      console.error('Error subscribing to newsletter:', err);
       inputRef.current?.focus();
     } finally {
       setIsSubmitting(false);

@@ -2,7 +2,6 @@ import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ServiceCardProps, cardVariants } from './types';
 import { cn } from '@/lib/utils';
 

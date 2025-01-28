@@ -29,7 +29,6 @@ export function CardGrid({
   iconAnimation = 'icon-360',
   cardAnimation = 'thicken-border',
   variant = 'grid',
-  centerWithinRow = false,
   animationImage
 }: CardGridProps) {
   // Validate cards length
