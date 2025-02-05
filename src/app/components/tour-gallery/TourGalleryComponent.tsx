@@ -133,7 +133,7 @@ const TourGalleryComponent = ({
             </button>
 
             <div className="relative">
-                <div className="hidden md:block relative w-full aspect-video bg-black overflow-hidden">
+                <div className="hidden rounded-xl md:block relative w-full aspect-video bg-black overflow-hidden">
                     {hasImages ? (
                         <>
                             {showNavigation && (
@@ -197,8 +197,8 @@ const TourGalleryComponent = ({
 
                 <aside
                     ref={sidebarRef}
-                    className={`absolute top-0 bottom-0 left-0 transition-transform duration-300 z-20 
-                            ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} w-full md:w-[150px]`}
+                    className={`absolute top-0 bottom-0 left-0 transition-transform duration-300 overflow-hidden z-20 rounded-l-xl
+                            ${isMenuOpen ? "translate-x-0" : "-translate-x-full"} w-full md:w-[200px]`}
                     style={{ backgroundColor: menuColor }}
                 >
                     <div className="p-3 border-b border-white/30">

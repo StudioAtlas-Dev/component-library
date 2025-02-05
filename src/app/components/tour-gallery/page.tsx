@@ -25,7 +25,7 @@ const logo = '/images/branded-placeholder.png';
 
 export default function Page() {
     return (
-        <div className="min-h-screen mt-20">
+        <div className="min-h-screen mt-20 ml-2 mr-2 overflow-hidden">
             <TourGalleryComponent
                 locations={locations}
                 menuColor={menuColor}
