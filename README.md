@@ -47,6 +47,15 @@ This separation provides several benefits:
 - Allows metadata updates without touching component code
 - Supports both client and server components seamlessly
 
+## Creating a New Component
+
+To create a new component, run the following command:
+```bash
+npm run new
+```
+
+This will prompt you for the component name, type, description, tags, and dependencies. From there, fill in the PascalCase component with actual code, run the npm run generate-previews and npm run update-deps commands, and then you're good to go! The new component will be added to the component browser.
+
 ## 🚀 Using Components in Other Projects
 
 ### 1. Copy Component Files
